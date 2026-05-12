@@ -1,3 +1,4 @@
+<!-- TheHeader.vue -->
 <template>
   <header class="main-header">
     <!-- Top Bar -->

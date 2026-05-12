@@ -1,3 +1,4 @@
+<!-- TheFooter.vue -->
 <template>
   <footer class="main-footer">
     <div class="footer-top">
@@ -99,6 +100,20 @@
     </div>
   </footer>
 </template>
+
+<script setup>
+const navLinks = [
+  { label: 'Beranda', to: '/' },
+  { label: 'Artikel', to: '/artikel' },
+  { label: 'Berita Daerah', to: '/berita-daerah' },
+  { label: 'Berita Nasional', to: '/berita-nasional' },
+  { label: 'Siaran Pers', to: '/siaran-pers' },
+  { label: 'Jurnal', to: '/jurnal' },
+  { label: 'Penelitian', to: '/penelitian' },
+  { label: 'Galeri', to: '/galeri' },
+  { label: 'Profil Kepala', to: '/profil-kepala' }
+]
+</script>
 
 <style scoped>
 .main-footer {
