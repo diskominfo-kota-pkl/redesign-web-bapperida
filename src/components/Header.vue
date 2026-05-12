@@ -1,478 +1,568 @@
-<!-- TheHeader.vue -->
 <template>
-  <header class="app-header" :class="{ scrolled: isScrolled, 'at-top': !isScrolled }">
+  <header class="header-wrapper" :class="{ scrolled: isScrolled }">
     <!-- Top Bar -->
     <div class="top-bar">
-      <div class="top-inner">
-        <div class="top-contact">
+      <div class="top-bar-inner">
+        <div class="top-left">
           <span class="top-item">
-            <i class="fas fa-phone-alt"></i> 0541-203785
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            (0541) 741 055
           </span>
-          <span class="top-sep"></span>
+          <span class="top-divider">|</span>
           <span class="top-item">
-            <i class="fas fa-envelope"></i> bappedalitbang@samarindakota.go.id
-          </span>
-          <span class="top-sep"></span>
-          <span class="top-item">
-            <i class="fas fa-map-marker-alt"></i> Jl. Dahlia No.81, Samarinda Kota
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            bappeda@samarindakota.go.id
           </span>
         </div>
         <div class="top-right">
-          <a href="https://bapperida.samarindakota.go.id" target="_blank" rel="noopener" class="top-web">
-            <i class="fas fa-external-link-alt"></i> Website Resmi
-          </a>
+          <span class="live-clock">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {{ currentTime }}
+          </span>
+          <span class="top-divider">|</span>
+          <span class="top-date">{{ currentDate }}</span>
+          <div class="top-social">
+            <a href="#" class="social-icon" title="Facebook">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-icon" title="Twitter">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+            </a>
+            <a href="#" class="social-icon" title="Instagram">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Navbar -->
-    <div class="navbar">
+    <!-- Main Navigation -->
+    <nav class="main-nav">
       <div class="nav-inner">
-        <!-- Brand -->
-        <router-link to="/" class="nav-brand">
-          <div class="brand-mark">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="40" height="40" rx="10" fill="url(#brand-grad)"/>
-              <path d="M20 8L12 16H16V30H24V16H28L20 8Z" fill="#0A2E1A" opacity="0.9"/>
-              <path d="M14 22H26V32H14V22Z" fill="#0A2E1A" opacity="0.6"/>
-              <defs>
-                <linearGradient id="brand-grad" x1="0" y1="0" x2="40" y2="40">
-                  <stop stop-color="#F0D98A"/>
-                  <stop offset="1" stop-color="#D4A843"/>
-                </linearGradient>
-              </defs>
+        <div class="nav-brand">
+          <div class="brand-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+              <circle cx="21" cy="21" r="20" stroke="#D4A843" stroke-width="2"/>
+              <path d="M21 6L8 14v14l13 8 13-8V14L21 6z" fill="none" stroke="#D4A843" stroke-width="1.5"/>
+              <path d="M21 11l-8 5v10l8 5 8-5V16l-8-5z" fill="#D4A843" opacity="0.2" stroke="#D4A843" stroke-width="1"/>
+              <path d="M21 16l-4 2.5v5L21 26l4-2.5v-5L21 16z" fill="#D4A843" opacity="0.5"/>
             </svg>
           </div>
           <div class="brand-text">
-            <span class="brand-title">BAPPERIDA</span>
-            <span class="brand-sub">Kota Samarinda</span>
+            <span class="brand-title">BADAN PERENCANAAN PEMBANGUNAN</span>
+            <span class="brand-subtitle">KOTA SAMARINDA</span>
           </div>
-        </router-link>
+        </div>
 
-        <!-- Desktop Nav -->
-        <nav class="nav-links">
-          <div v-for="link in navLinks" :key="link.to" class="nav-item" :class="{ 'has-children': link.children }">
-            <router-link :to="link.to" class="nav-link" :class="{ active: isExactActive(link) }">
-              <span>{{ link.label }}</span>
-              <i v-if="link.children" class="fas fa-chevron-down nav-chevron"></i>
-            </router-link>
-            <!-- Dropdown -->
-            <div v-if="link.children" class="nav-dropdown">
-              <router-link v-for="child in link.children" :key="child.to" :to="child.to" class="dropdown-link">
-                <i :class="child.icon"></i>
-                <span>{{ child.label }}</span>
-              </router-link>
+        <!-- Desktop Menu -->
+        <ul class="nav-menu" :class="{ active: mobileOpen }">
+          <li><a href="#" class="nav-link active">Beranda</a></li>
+          <li class="has-dropdown" @mouseenter="openDropdown(0)" @mouseleave="closeDropdown">
+            <a href="#" class="nav-link">Profil
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </a>
+            <div class="dropdown-menu" :class="{ show: activeDropdown === 0 }">
+              <a href="#">Visi & Misi</a>
+              <a href="#">Struktur Organisasi</a>
+              <a href="#">Tupoksi</a>
+              <a href="#">Sejarah</a>
             </div>
-          </div>
-        </nav>
+          </li>
+          <li class="has-dropdown" @mouseenter="openDropdown(1)" @mouseleave="closeDropdown">
+            <a href="#" class="nav-link">Berita
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </a>
+            <div class="dropdown-menu" :class="{ show: activeDropdown === 1 }">
+              <a href="#">Berita Terkini</a>
+              <a href="#">Pengumuman</a>
+              <a href="#">Agenda Kegiatan</a>
+            </div>
+          </li>
+          <li><a href="#" class="nav-link">Galeri</a></li>
+          <li><a href="#" class="nav-link">Layanan</a></li>
+          <li><a href="#" class="nav-link">Kontak</a></li>
+          <li><a href="#" class="nav-link">PPID</a></li>
+        </ul>
 
-        <!-- Actions -->
+        <!-- Search & Hamburger -->
         <div class="nav-actions">
-          <button class="action-btn" @click="searchOpen = true" aria-label="Cari">
-            <i class="fas fa-search"></i>
+          <button class="search-toggle" @click="searchOpen = !searchOpen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </button>
-          <button class="action-btn action-btn--cta" @click="showToast('Mengarahkan ke halaman layanan...')">
-            <i class="fas fa-concierge-bell"></i>
-            <span class="action-label">Layanan</span>
-          </button>
-          <button class="hamburger" :class="{ open: mobileOpen }" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+          <button class="hamburger" :class="{ active: mobileOpen }" @click="mobileOpen = !mobileOpen">
             <span></span><span></span><span></span>
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Mobile Drawer -->
-    <Transition name="drawer">
-      <div v-if="mobileOpen" class="mobile-drawer">
-        <div class="drawer-header">
-          <div class="drawer-brand">BAPPERIDA</div>
-          <button class="drawer-close" @click="mobileOpen = false"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="drawer-body">
-          <router-link v-for="link in flatLinks" :key="link.to" :to="link.to"
-            class="drawer-link" @click="mobileOpen = false">
-            <i :class="link.icon || 'fas fa-chevron-right'"></i>
-            <span>{{ link.label }}</span>
-          </router-link>
-        </div>
-        <div class="drawer-footer">
-          <button class="drawer-cta" @click="mobileOpen = false; showToast('Mengarahkan ke halaman layanan...')">
-            <i class="fas fa-concierge-bell"></i> Akses Layanan Publik
-          </button>
-        </div>
-      </div>
-    </Transition>
-    <Transition name="overlay">
-      <div v-if="mobileOpen" class="drawer-mask" @click="mobileOpen = false"></div>
-    </Transition>
-
-    <!-- Search Modal -->
-    <Transition name="modal">
-      <div v-if="searchOpen" class="search-modal" @click.self="searchOpen = false">
-        <div class="search-card">
-          <div class="search-row">
-            <i class="fas fa-search search-icon"></i>
-            <input ref="searchInput" v-model="searchQuery" type="text"
-              placeholder="Cari berita, artikel, layanan..." @keyup.esc="searchOpen = false">
-            <button class="search-close-btn" @click="searchOpen = false"><i class="fas fa-times"></i></button>
-          </div>
-          <div class="search-footer">
-            <span>Tekan <kbd>Enter</kbd> untuk mencari</span>
-            <span><kbd>Esc</kbd> untuk menutup</span>
+      <!-- Search Bar -->
+      <transition name="slide-down">
+        <div class="search-bar" v-if="searchOpen">
+          <div class="search-inner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Cari informasi..." v-model="searchQuery" />
+            <button @click="searchOpen = false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
         </div>
-      </div>
-    </Transition>
+      </transition>
+    </nav>
 
-    <!-- Toast -->
-    <Transition name="toast">
-      <div v-if="toastMsg" class="header-toast">
-        <i class="fas fa-check-circle"></i> {{ toastMsg }}
-      </div>
-    </Transition>
+    <!-- Mobile Overlay -->
+    <transition name="fade">
+      <div class="mobile-overlay" v-if="mobileOpen" @click="mobileOpen = false"></div>
+    </transition>
   </header>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-
-const navLinks = [
-  { label: 'Beranda', to: '/' },
-  {
-    label: 'Informasi', to: '/artikel', children: [
-      { label: 'Artikel', to: '/artikel', icon: 'fas fa-file-alt' },
-      { label: 'Berita Daerah', to: '/berita-daerah', icon: 'fas fa-map-marked-alt' },
-      { label: 'Berita Nasional', to: '/berita-nasional', icon: 'fas fa-flag' },
-      { label: 'Siaran Pers', to: '/siaran-pers', icon: 'fas fa-bullhorn' }
-    ]
-  },
-  { label: 'Jurnal', to: '/jurnal' },
-  { label: 'Penelitian', to: '/penelitian' },
-  { label: 'Galeri', to: '/galeri' },
-  { label: 'Profil Kepala', to: '/profil-kepala' }
-]
-
-const flatLinks = computed(() => {
-  const links = []
-  navLinks.forEach(l => {
-    links.push({ label: l.label, to: l.to, icon: l.icon })
-    if (l.children) l.children.forEach(c => links.push(c))
-  })
-  return links
-})
-
-function isExactActive(link) {
-  if (link.children) return link.children.some(c => route.path === c.to)
-  return route.path === link.to
-}
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const isScrolled = ref(false)
 const mobileOpen = ref(false)
 const searchOpen = ref(false)
 const searchQuery = ref('')
-const searchInput = ref(null)
-const toastMsg = ref('')
-let toastTimer = null
+const activeDropdown = ref(-1)
+const currentTime = ref('')
+const currentDate = ref('')
 
-function showToast(msg) {
-  toastMsg.value = msg
-  if (toastTimer) clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => { toastMsg.value = '' }, 2500)
+let clockInterval = null
+
+const updateClock = () => {
+  const now = new Date()
+  currentTime.value = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
+  currentDate.value = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-function handleScroll() { isScrolled.value = window.scrollY > 40 }
-
-function handleKeydown(e) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchOpen.value = true }
-  if (e.key === 'Escape') { searchOpen.value = false; mobileOpen.value = false }
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 40
 }
 
-watch(searchOpen, v => {
-  if (v) { nextTick(() => searchInput.value?.focus()); document.body.style.overflow = 'hidden' }
-  else document.body.style.overflow = ''
-})
-watch(mobileOpen, v => { document.body.style.overflow = v ? 'hidden' : '' })
+const openDropdown = (index) => {
+  activeDropdown.value = index
+}
+
+const closeDropdown = () => {
+  activeDropdown.value = -1
+}
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('keydown', handleKeydown)
-  handleScroll()
+  updateClock()
+  clockInterval = setInterval(updateClock, 1000)
+  window.addEventListener('scroll', handleScroll)
 })
+
 onUnmounted(() => {
+  clearInterval(clockInterval)
   window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('keydown', handleKeydown)
-  document.body.style.overflow = ''
 })
 </script>
 
 <style scoped>
-:root {
-  --g900:#0A2E1A;--g800:#143D26;--g700:#1B5E30;--g600:#237A3E;
-  --g500:#2E964F;--g400:#4CB872;--g300:#7DD4A0;--g200:#B5E6C8;
-  --g100:#E0F3E8;--g50:#F0FAF3;
-  --gold:#D4A843;--gold-light:#E2C36B;--gold-pale:#F0D98A;
-  --dark:#0F1A14;
-  --gr8:#1A1F1C;--gr7:#3D4842;--gr6:#556159;--gr5:#6B7A72;
-  --gr4:#8A9992;--gr3:#B0BDB7;--gr2:#D4DDD9;--gr1:#E8EDEB;--gr0:#F4F7F6;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-
 /* ===== TOP BAR ===== */
-.top-bar{
-  background:var(--g900);padding:0;overflow:hidden;
-  max-height:42px;transition:max-height .4s ease,opacity .3s ease;
+.top-bar {
+  background: linear-gradient(135deg, #0B1D33 0%, #14325A 100%);
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  padding: 6px 0;
+  position: relative;
+  z-index: 1001;
 }
-.app-header.scrolled .top-bar{max-height:0;opacity:0}
-.top-inner{
-  max-width:1280px;margin:0 auto;padding:9px 24px;
-  display:flex;align-items:center;justify-content:space-between;
+.top-bar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.top-contact{display:flex;align-items:center;gap:0}
-.top-item{
-  display:inline-flex;align-items:center;gap:6px;
-  color:var(--g200);font-size:.72rem;font-weight:400;
+.top-left, .top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.top-item i{color:var(--g400);font-size:.65rem}
-.top-sep{width:1px;height:12px;background:rgba(255,255,255,.1);margin:0 14px}
-.top-web{
-  display:inline-flex;align-items:center;gap:6px;
-  color:var(--g300);text-decoration:none;font-size:.72rem;font-weight:500;
-  transition:color .3s ease;
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
-.top-web i{font-size:.6rem}
-.top-web:hover{color:var(--gold-light)}
+.top-divider {
+  opacity: 0.3;
+  font-size: 10px;
+}
+.top-social {
+  display: flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.social-icon:hover {
+  background: #D4A843;
+  color: #0B1D33;
+  transform: translateY(-1px);
+}
+.live-clock {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: #D4A843;
+}
 
-/* ===== NAVBAR ===== */
-.navbar{
-  position:sticky;top:0;z-index:1000;
-  background:rgba(255,255,255,.6);backdrop-filter:blur(24px) saturate(1.4);
-  border-bottom:1px solid transparent;
-  transition:all .4s cubic-bezier(.16,1,.3,1);
+/* ===== MAIN NAV ===== */
+.main-nav {
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
 }
-.app-header.scrolled .navbar{
-  background:rgba(255,255,255,.92);
-  border-bottom-color:var(--gr1);
-  box-shadow:0 1px 24px rgba(10,46,26,.06);
+.header-wrapper.scrolled .main-nav {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-.app-header.at-top .navbar{border-bottom-color:rgba(255,255,255,.08)}
-.nav-inner{
-  max-width:1280px;margin:0 auto;padding:0 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  height:68px;gap:20px;
-}
-
-/* ===== BRAND ===== */
-.nav-brand{
-  display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0;
-}
-.brand-mark{width:40px;height:40px;flex-shrink:0}
-.brand-mark svg{width:100%;height:100%;display:block}
-.brand-text{display:flex;flex-direction:column}
-.brand-title{
-  font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;
-  color:var(--g900);line-height:1.15;letter-spacing:.5px;
-}
-.brand-sub{
-  font-size:.58rem;color:var(--gr5);letter-spacing:2.5px;
-  text-transform:uppercase;font-weight:500;
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
 }
 
-/* ===== NAV LINKS ===== */
-.nav-links{display:flex;align-items:center;gap:0}
-.nav-item{position:relative}
-.nav-link{
-  position:relative;display:inline-flex;align-items:center;gap:5px;
-  color:var(--gr6);text-decoration:none;font-size:.8rem;font-weight:500;
-  padding:8px 14px;border-radius:8px;white-space:nowrap;
-  transition:all .25s ease;
+/* Brand */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
 }
-.nav-link:hover{color:var(--g700);background:var(--g50)}
-.nav-link.active{color:var(--g700);font-weight:600;background:var(--g50)}
-.nav-link.active::after{
-  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:18px;height:2.5px;background:var(--gold);border-radius:99px;
+.brand-icon {
+  flex-shrink: 0;
 }
-.nav-chevron{font-size:.55rem;transition:transform .25s ease}
-.nav-item:hover .nav-chevron{transform:rotate(180deg)}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.brand-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0B1D33;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.brand-subtitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #D4A843;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Menu */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+.nav-link:hover, .nav-link.active {
+  color: #0B1D33;
+  background: #F0F4F8;
+}
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: #D4A843;
+  border-radius: 2px;
+}
 
 /* Dropdown */
-.nav-dropdown{
-  position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(8px);
-  min-width:220px;padding:8px;
-  background:rgba(255,255,255,.97);backdrop-filter:blur(20px);
-  border:1px solid var(--gr1);border-radius:14px;
-  box-shadow:0 12px 40px rgba(10,46,26,.1);
-  opacity:0;pointer-events:none;
-  transition:all .3s cubic-bezier(.16,1,.3,1);
+.has-dropdown {
+  position: relative;
 }
-.nav-item:hover .nav-dropdown{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
-.dropdown-link{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-radius:9px;
-  color:var(--gr6);text-decoration:none;font-size:.8rem;font-weight:500;
-  transition:all .2s ease;
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.25s ease;
+  z-index: 100;
 }
-.dropdown-link i{width:16px;text-align:center;font-size:.78rem;color:var(--g400)}
-.dropdown-link:hover{background:var(--g50);color:var(--g700)}
-
-/* ===== ACTIONS ===== */
-.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.action-btn{
-  width:38px;height:38px;border-radius:10px;
-  border:1.5px solid var(--gr2);background:transparent;
-  color:var(--gr5);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;transition:all .25s ease;
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
-.action-btn:hover{background:var(--g50);color:var(--g700);border-color:var(--g200)}
-.action-btn--cta{
-  width:auto;padding:0 16px;gap:8px;
-  background:linear-gradient(135deg,var(--gold-light),var(--gold));
-  border:none;color:var(--g900);font-weight:600;
-  font-size:.76rem;font-family:'Plus Jakarta Sans',sans-serif;
-  box-shadow:0 2px 12px rgba(212,168,67,.25);
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 24px;
+  width: 16px;
+  height: 8px;
+  background: transparent;
 }
-.action-btn--cta:hover{
-  transform:translateY(-1px);
-  box-shadow:0 4px 20px rgba(212,168,67,.4);
-  background:linear-gradient(135deg,var(--gold-light),var(--gold));
-  color:var(--g900);
+.dropdown-menu a {
+  display: block;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #4A5568;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
-.action-label{display:inline}
-.hamburger{
-  display:none;width:38px;height:38px;border-radius:10px;
-  border:1.5px solid var(--gr2);background:transparent;
-  cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;
-}
-.hamburger span{
-  display:block;width:18px;height:2px;background:var(--gr6);
-  border-radius:99px;transition:all .3s ease;
-}
-.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
-.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-
-/* ===== MOBILE DRAWER ===== */
-.drawer-mask{
-  position:fixed;inset:0;z-index:998;
-  background:rgba(10,46,26,.4);backdrop-filter:blur(4px);
-}
-.mobile-drawer{
-  position:fixed;top:0;right:0;bottom:0;width:300px;z-index:999;
-  background:#fff;
-  display:flex;flex-direction:column;
-  box-shadow:-8px 0 40px rgba(0,0,0,.1);
-}
-.drawer-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:20px 24px;border-bottom:1px solid var(--gr1);
-}
-.drawer-brand{
-  font-family:'Playfair Display',serif;font-size:1.2rem;
-  font-weight:700;color:var(--g900);
-}
-.drawer-close{
-  width:36px;height:36px;border-radius:10px;border:1px solid var(--gr2);
-  background:transparent;color:var(--gr5);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:.9rem;
-}
-.drawer-body{flex:1;overflow-y:auto;padding:12px}
-.drawer-link{
-  display:flex;align-items:center;gap:12px;
-  padding:13px 16px;border-radius:10px;
-  color:var(--gr6);text-decoration:none;font-size:.88rem;font-weight:500;
-  transition:all .2s ease;
-}
-.drawer-link i{width:18px;text-align:center;font-size:.8rem;color:var(--g400)}
-.drawer-link:hover,.drawer-link.router-link-exact-active{background:var(--g50);color:var(--g700)}
-.drawer-footer{padding:16px 24px;border-top:1px solid var(--gr1)}
-.drawer-cta{
-  width:100%;padding:13px;border-radius:12px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--gold-light),var(--gold));
-  color:var(--g900);font-size:.88rem;font-weight:600;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:8px;
+.dropdown-menu a:hover {
+  background: #F0F4F8;
+  color: #0B1D33;
+  padding-left: 18px;
 }
 
-/* ===== SEARCH ===== */
-.search-modal{
-  position:fixed;inset:0;z-index:9999;
-  background:rgba(10,46,26,.7);backdrop-filter:blur(16px);
-  display:flex;align-items:flex-start;justify-content:center;padding-top:14vh;
+/* Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.search-card{
-  width:100%;max-width:600px;margin:0 20px;
-  background:#fff;border-radius:20px;overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,.2);
+.search-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  background: transparent;
+  color: #4A5568;
+  cursor: pointer;
+  transition: all 0.25s;
 }
-.search-row{
-  display:flex;align-items:center;gap:14px;padding:18px 24px;
-}
-.search-icon{color:var(--gr4);font-size:1.1rem;flex-shrink:0}
-.search-row input{
-  flex:1;border:none;outline:none;font-size:1.05rem;
-  font-family:'Plus Jakarta Sans',sans-serif;color:var(--gr8);background:transparent;
-}
-.search-row input::placeholder{color:var(--gr4)}
-.search-close-btn{
-  width:32px;height:32px;border-radius:8px;border:none;
-  background:var(--gr0);color:var(--gr5);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:.8rem;
-  transition:all .2s ease;
-}
-.search-close-btn:hover{background:var(--gr2);color:var(--gr8)}
-.search-footer{
-  display:flex;justify-content:space-between;
-  padding:10px 24px 14px;font-size:.72rem;color:var(--gr4);
-  border-top:1px solid var(--gr1);
-}
-.search-footer kbd{
-  padding:1px 6px;background:var(--gr0);border-radius:4px;
-  font-size:.66rem;font-weight:600;border:1px solid var(--gr2);
+.search-toggle:hover {
+  border-color: #D4A843;
+  color: #D4A843;
+  background: rgba(212,168,67,0.05);
 }
 
-/* ===== TOAST ===== */
-.header-toast{
-  position:fixed;bottom:24px;right:24px;z-index:99999;
-  padding:14px 24px;background:var(--g700);color:#fff;
-  border-radius:12px;font-size:.84rem;font-weight:500;
-  box-shadow:0 8px 32px rgba(27,94,48,.35);
-  display:flex;align-items:center;gap:10px;
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  padding: 10px;
+  transition: all 0.3s;
 }
-.toast-enter-active{animation:toastSlide .4s cubic-bezier(.16,1,.3,1)}
-.toast-leave-active{animation:toastSlide .3s ease reverse}
-@keyframes toastSlide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-.modal-enter-active{animation:fadeIn .25s ease}
-.modal-leave-active{animation:fadeIn .2s ease reverse}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.drawer-enter-active{animation:drawerIn .35s cubic-bezier(.16,1,.3,1)}
-.drawer-leave-active{animation:drawerIn .25s ease reverse}
-@keyframes drawerIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-.overlay-enter-active{animation:fadeIn .25s ease}
-.overlay-leave-active{animation:fadeIn .2s ease reverse}
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Search Bar */
+.search-bar {
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  padding: 16px 0;
+}
+.search-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 8px 16px;
+  transition: border-color 0.3s;
+}
+.search-inner:focus-within {
+  border-color: #D4A843;
+}
+.search-inner input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1A202C;
+  font-family: inherit;
+}
+.search-inner input::placeholder {
+  color: #A0AEC0;
+}
+.search-inner button {
+  display: flex;
+  align-items: center;
+  color: #718096;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.search-inner button:hover {
+  color: #E53E3E;
+}
+
+/* Mobile Overlay */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+}
+
+/* Transitions */
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-down-enter-from, .slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 
 /* ===== RESPONSIVE ===== */
-@media(max-width:1024px){
-  .top-web{display:none}
-  .nav-link{font-size:.76rem;padding:8px 10px}
+@media (max-width: 1024px) {
+  .hamburger {
+    display: flex;
+  }
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;
+    flex-direction: column;
+    align-items: stretch;
+    background: #FFFFFF;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+    padding: 80px 16px 24px;
+    gap: 0;
+    transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+    z-index: 999;
+    overflow-y: auto;
+  }
+  .nav-menu.active {
+    right: 0;
+  }
+  .nav-link {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+  .nav-link.active::after {
+    display: none;
+  }
+  .nav-link.active {
+    background: rgba(212,168,67,0.1);
+    color: #D4A843;
+  }
+  .has-dropdown .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    padding-left: 16px;
+    display: none;
+    background: #F8FAFC;
+    border-radius: 10px;
+    margin-top: 4px;
+  }
+  .dropdown-menu.show {
+    display: block;
+  }
+  .mobile-overlay {
+    display: block;
+  }
+  .brand-title {
+    font-size: 11px;
+  }
+  .brand-subtitle {
+    font-size: 13px;
+  }
 }
-@media(max-width:860px){
-  .nav-links{display:none}
-  .hamburger{display:flex}
-  .action-label{display:none}
-  .action-btn--cta{padding:0}
-}
-@media(max-width:480px){
-  .top-sep{margin:0 8px}
-  .top-item{font-size:.66rem}
-  .brand-title{font-size:1rem}
-  .brand-mark{width:34px;height:34px}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+@media (max-width: 640px) {
+  .top-left {
+    display: none;
+  }
+  .top-bar-inner {
+    justify-content: flex-end;
+  }
+  .nav-inner {
+    height: 64px;
+  }
+  .brand-text {
+    display: none;
+  }
 }
 </style>
