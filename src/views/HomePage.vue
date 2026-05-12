@@ -1,1338 +1,1373 @@
 <template>
-  <main class="home-page">
-    <!-- ===== HERO SLIDER ===== -->
-    <section class="hero-slider" @mouseenter="pauseSlider" @mouseleave="resumeSlider">
-      <div class="slider-track">
-        <transition-group name="hero-fade">
-          <div
-            v-for="(slide, i) in slides"
-            :key="slide.id"
-            v-show="currentSlide === i"
-            class="hero-slide"
+  <div class="homepage" ref="homepageRef">
+
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <nav class="navbar" :class="{ scrolled: isScrolled }">
+      <div class="navbar-brand">
+        <div class="logo-wrapper">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Lambang_Kota_Samarinda.png/240px-Lambang_Kota_Samarinda.png"
+            alt="Logo BAPPERIDA Samarinda"
+            class="logo-img"
+          />
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">BAPPERIDA</span>
+          <span class="brand-city">Kota Samarinda</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li v-for="(link, i) in navLinks" :key="i" :class="{ 'has-dropdown': link.dropdown }">
+          <a
+            href="#"
+            class="nav-link"
+            :class="{ active: activeNav === i }"
+            @mouseenter="activeNav = i"
+            @mouseleave="activeNav = -1"
           >
-            <img :src="slide.image" :alt="slide.title" />
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-              <span class="hero-badge">{{ slide.badge }}</span>
-              <h1 class="hero-title">{{ slide.title }}</h1>
-              <p class="hero-desc">{{ slide.desc }}</p>
-              <a href="#" class="hero-btn">
-                Selengkapnya
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            {{ link.label }}
+            <svg v-if="link.dropdown" class="chevron" :class="{ rotated: activeNav === i }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </a>
+          <Transition name="dropdown">
+            <div v-if="link.dropdown && activeNav === i" class="dropdown-panel">
+              <a v-for="(sub, j) in link.subs" :key="j" href="#" class="dropdown-item">
+                <span class="dropdown-dot"></span>
+                {{ sub }}
               </a>
             </div>
-          </div>
-        </transition-group>
+          </Transition>
+        </li>
+      </ul>
+
+      <div class="navbar-right">
+        <div class="lang-switch">
+          <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
+          <span class="lang-divider">/</span>
+          <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
+        </div>
+        <a href="#" class="btn-akses">
+          <span>Akses Layanan</span>
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
       </div>
 
-      <!-- Arrows -->
-      <button class="slider-arrow slider-prev" @click="prevSlide">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <button class="hamburger" :class="{ open: mobileOpen }" @click="mobileOpen = !mobileOpen">
+        <span></span><span></span><span></span>
       </button>
-      <button class="slider-arrow slider-next" @click="nextSlide">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </nav>
+
+    <!-- Mobile menu -->
+    <Transition name="mobileMenu">
+      <div class="mobile-menu" v-if="mobileOpen">
+        <a v-for="(link, i) in navLinks" :key="i" href="#" @click="mobileOpen = false">
+          {{ link.label }}
+        </a>
+        <div class="mobile-menu-bottom">
+          <div class="lang-switch mobile-lang">
+            <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
+            <span class="lang-divider">/</span>
+            <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
+          </div>
+          <a href="#" class="btn-akses mobile-btn">Akses Layanan</a>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ══════════════ HERO ══════════════ -->
+    <section class="hero" @mousemove="onHeroMouseMove" @mouseleave="heroParallax = { x: 0, y: 0 }">
+      <div class="hero-bg" :style="heroBgStyle">
+        <img
+          src="https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=1920&q=80"
+          alt="Kota Samarinda"
+          class="hero-img"
+        />
+      </div>
+
+      <canvas ref="particleCanvas" class="particle-canvas"></canvas>
+
+      <div class="overlay-left"></div>
+      <div class="overlay-bottom"></div>
+
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+
+      <div class="hero-content" :style="heroContentStyle">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Portal Resmi Pemerintah Kota
+        </div>
+        <h1 class="hero-title">
+          <span class="title-line" v-for="(line, i) in heroLines" :key="i" :style="{ animationDelay: `${0.3 + i * 0.15}s` }">
+            {{ line }}
+          </span>
+        </h1>
+        <p class="hero-subtitle">
+          Portal terpadu untuk perencanaan, riset, dan pembangunan daerah<br class="br-desktop" />
+          yang berkelanjutan, inovatif, dan berbasis data.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary">
+            <span>Jelajahi Portal</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <a href="#" class="btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon-sm">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>Tonton Profil</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="scroll-indicator">
+        <div class="scroll-line"></div>
+        <span>Scroll</span>
+      </div>
+    </section>
+
+    <!-- ══════════════ FEATURE CARDS ══════════════ -->
+    <section class="features-section" ref="featuresSection">
+      <div class="features-container">
+        <div class="section-header" :class="{ visible: featuresVisible }">
+          <span class="section-tag">Layanan Kami</span>
+          <h2 class="section-title">Pilar Pembangunan<br/>Kota Samarinda</h2>
+        </div>
+        <div class="cards-grid">
+          <div
+            class="card"
+            v-for="(item, i) in features"
+            :key="item.title"
+            :class="[{ visible: featuresVisible }, { 'card-active': activeCard === i }]"
+            :style="{ transitionDelay: `${0.15 + i * 0.1}s` }"
+            @mouseenter="activeCard = i"
+            @mouseleave="activeCard = -1"
+          >
+            <div class="card-glow" :class="`glow-${i}`"></div>
+            <div class="card-icon-wrap">
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="item.svgPaths"></svg>
+            </div>
+            <h3 class="card-title">{{ item.title }}</h3>
+            <p class="card-desc">{{ item.desc }}</p>
+            <div class="card-link">
+              <span>Selengkapnya</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-arrow">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ STATISTIK ══════════════ -->
+    <section class="stats-section" ref="statsSection">
+      <div class="stats-bg-pattern"></div>
+      <div class="stats-container">
+        <div class="section-header" :class="{ visible: statsVisible }">
+          <span class="section-tag">Data & Statistik</span>
+          <h2 class="section-title">Capaian Pembangunan<br/>Kota Samarinda</h2>
+        </div>
+        <div class="stats-grid">
+          <div
+            v-for="(stat, i) in stats"
+            :key="stat.label"
+            class="stat-card"
+            :class="{ visible: statsVisible }"
+            :style="{ transitionDelay: `${0.1 + i * 0.1}s` }"
+          >
+            <div class="stat-icon-wrap" :style="{ background: stat.iconBg }">
+              <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="stat.svg"></svg>
+            </div>
+            <div class="stat-value">{{ statsVisible ? stat.display : '0' }}{{ stat.suffix }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-bar-track">
+              <div class="stat-bar-fill" :style="{ width: statsVisible ? stat.bar + '%' : '0%', background: stat.barColor }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ BERITA TERKINI ══════════════ -->
+    <section class="news-section" ref="newsSection">
+      <div class="news-container">
+        <div class="section-header" :class="{ visible: newsVisible }">
+          <span class="section-tag">Publikasi</span>
+          <h2 class="section-title">Berita & Pengumuman<br/>Terkini</h2>
+        </div>
+        <div class="news-grid">
+          <div
+            v-for="(news, i) in newsItems"
+            :key="i"
+            class="news-card"
+            :class="{ visible: newsVisible }"
+            :style="{ transitionDelay: `${0.15 + i * 0.12}s` }"
+          >
+            <div class="news-img-wrap">
+              <img :src="news.img" :alt="news.title" class="news-img" loading="lazy" />
+              <div class="news-category">{{ news.category }}</div>
+            </div>
+            <div class="news-body">
+              <div class="news-meta">
+                <span class="news-date">{{ news.date }}</span>
+                <span class="news-dot"></span>
+                <span class="news-read">{{ news.readTime }}</span>
+              </div>
+              <h3 class="news-title">{{ news.title }}</h3>
+              <p class="news-excerpt">{{ news.excerpt }}</p>
+              <a href="#" class="news-link">
+                Baca selengkapnya
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-arrow-sm">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="news-cta" :class="{ visible: newsVisible }" style="transition-delay: 0.55s">
+          <a href="#" class="btn-outline">
+            <span>Lihat Semua Berita</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon-sm">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ CTA SECTION ══════════════ -->
+    <section class="cta-section" ref="ctaSection">
+      <div class="cta-glow"></div>
+      <div class="cta-content" :class="{ visible: ctaVisible }">
+        <h2 class="cta-title">Siap Berpartisipasi dalam<br/>Pembangunan Samarinda?</h2>
+        <p class="cta-desc">Akses layanan perencanaan dan pembangunan daerah secara transparan dan akuntabel.</p>
+        <div class="cta-buttons">
+          <a href="#" class="btn-primary btn-lg">
+            <span>Mulai Sekarang</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <a href="#" class="btn-ghost btn-lg">Hubungi Kami</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="footer-logo-row">
+              <div class="logo-wrapper">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Lambang_Kota_Samarinda.png/240px-Lambang_Kota_Samarinda.png" alt="Logo" class="logo-img" />
+              </div>
+              <div class="brand-text">
+                <span class="brand-name">BAPPERIDA</span>
+                <span class="brand-city">Kota Samarinda</span>
+              </div>
+            </div>
+            <p class="footer-desc">Badan Perencanaan Penelitian dan Pengembangan Daerah Kota Samarinda — Membangun peradaban dari tepian Mahakam.</p>
+            <div class="footer-socials">
+              <a href="#" class="social-icon" v-for="s in socials" :key="s.label" :aria-label="s.label">
+                <svg viewBox="0 0 24 24" fill="currentColor" v-html="s.path"></svg>
+              </a>
+            </div>
+          </div>
+          <div class="footer-links-group" v-for="group in footerGroups" :key="group.title">
+            <h4 class="footer-group-title">{{ group.title }}</h4>
+            <a v-for="link in group.links" :key="link" href="#" class="footer-link">{{ link }}</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>&copy; {{ new Date().getFullYear() }} BAPPERIDA Kota Samarinda. Hak cipta dilindungi.</span>
+          <div class="footer-bottom-links">
+            <a href="#">Kebijakan Privasi</a>
+            <a href="#">Syarat &amp; Ketentuan</a>
+            <a href="#">Peta Situs</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <Transition name="fadeScale">
+      <button v-if="showBackToTop" class="back-to-top" @click="scrollToTop" aria-label="Kembali ke atas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
       </button>
+    </Transition>
 
-      <!-- Dots -->
-      <div class="slider-dots">
-        <button
-          v-for="(slide, i) in slides"
-          :key="slide.id"
-          class="slider-dot"
-          :class="{ active: currentSlide === i }"
-          @click="goToSlide(i)"
-        >
-          <span class="dot-progress" :style="{ width: currentSlide === i ? progress + '%' : '0%' }"></span>
-        </button>
-      </div>
-
-      <!-- Slide Counter -->
-      <div class="slide-counter">
-        <span class="counter-current">{{ String(currentSlide + 1).padStart(2, '0') }}</span>
-        <span class="counter-sep">/</span>
-        <span class="counter-total">{{ String(slides.length).padStart(2, '0') }}</span>
-      </div>
-    </section>
-
-    <!-- ===== WELCOME SECTION ===== -->
-    <section class="welcome-section" ref="welcomeRef">
-      <div class="welcome-inner">
-        <div class="welcome-icon" :class="{ animate: welcomeVisible }">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <h2 class="welcome-title" :class="{ animate: welcomeVisible }">Selamat Datang di Website Resmi</h2>
-        <p class="welcome-subtitle" :class="{ animate: welcomeVisible }">
-          Badan Perencanaan Pembangunan Kota Samarinda
-        </p>
-        <p class="welcome-desc" :class="{ animate: welcomeVisible }">
-          Website ini merupakan media informasi dan komunikasi resmi Badan Perencanaan Pembangunan Kota Samarinda
-          dalam menyampaikan informasi terkait perencanaan pembangunan daerah, kegiatan, dan layanan publik
-          kepada masyarakat Kota Samarinda.
-        </p>
-      </div>
-    </section>
-
-    <!-- ===== STATS BAR ===== -->
-    <section class="stats-bar" ref="statsRef">
-      <div class="stats-inner">
-        <div class="stat-item" v-for="stat in stats" :key="stat.label" :class="{ animate: statsVisible }">
-          <div class="stat-number">{{ stat.value }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== MAIN CONTENT: BERITA + SIDEBAR ===== -->
-    <section class="content-section" ref="contentRef">
-      <div class="content-inner">
-        <!-- Left: Berita Terkini -->
-        <div class="content-main">
-          <div class="section-header" :class="{ animate: contentVisible }">
-            <div class="section-header-left">
-              <span class="section-badge">Informasi</span>
-              <h2 class="section-title">Berita Terkini</h2>
-            </div>
-            <a href="#" class="section-link">
-              Lihat Semua
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-          </div>
-
-          <!-- Featured News -->
-          <div class="news-featured" :class="{ animate: contentVisible }">
-            <div class="news-featured-img">
-              <img :src="news[0].image" :alt="news[0].title" />
-              <span class="news-category">{{ news[0].category }}</span>
-            </div>
-            <div class="news-featured-body">
-              <span class="news-date">{{ news[0].date }}</span>
-              <h3 class="news-featured-title">
-                <a href="#">{{ news[0].title }}</a>
-              </h3>
-              <p class="news-featured-excerpt">{{ news[0].excerpt }}</p>
-              <a href="#" class="news-read-more">
-                Baca Selengkapnya
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-              </a>
-            </div>
-          </div>
-
-          <!-- News Grid -->
-          <div class="news-grid">
-            <article
-              v-for="(item, i) in news.slice(1)"
-              :key="item.title"
-              class="news-card"
-              :class="{ animate: contentVisible }"
-              :style="{ transitionDelay: (i * 100) + 'ms' }"
-            >
-              <div class="news-card-img">
-                <img :src="item.image" :alt="item.title" />
-                <span class="news-category">{{ item.category }}</span>
-              </div>
-              <div class="news-card-body">
-                <span class="news-date">{{ item.date }}</span>
-                <h3 class="news-card-title"><a href="#">{{ item.title }}</a></h3>
-                <p class="news-card-excerpt">{{ item.excerpt }}</p>
-              </div>
-            </article>
-          </div>
-
-          <!-- ===== GALERI KEGIATAN ===== -->
-          <div class="section-header" style="margin-top: 56px;" :class="{ animate: contentVisible }">
-            <div class="section-header-left">
-              <span class="section-badge">Dokumentasi</span>
-              <h2 class="section-title">Galeri Kegiatan</h2>
-            </div>
-            <a href="#" class="section-link">
-              Lihat Semua
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-          </div>
-
-          <div class="gallery-grid">
-            <div
-              v-for="(img, i) in gallery"
-              :key="i"
-              class="gallery-item"
-              :class="{ 'gallery-large': i === 0, animate: contentVisible }"
-              :style="{ transitionDelay: (i * 80) + 'ms' }"
-            >
-              <img :src="img.src" :alt="img.caption" />
-              <div class="gallery-overlay">
-                <div class="gallery-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-                </div>
-                <span class="gallery-caption">{{ img.caption }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Sidebar -->
-        <aside class="content-sidebar">
-          <!-- QR Code -->
-          <div class="sidebar-card" :class="{ animate: contentVisible }">
-            <div class="sidebar-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="21" y1="21" x2="21" y2="21.01"/></svg>
-              <span>Scan QR Code</span>
-            </div>
-            <div class="qr-code-area">
-              <div class="qr-placeholder">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(11,29,51,0.25)" stroke-width="1"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/><rect x="18" y="18" width="4" height="4"/><rect x="14" y="18" width="4" height="4"/><rect x="18" y="14" width="4" height="4"/></svg>
-              </div>
-              <p class="qr-text">Scan untuk akses cepat website kami</p>
-            </div>
-          </div>
-
-          <!-- Pejabat / Official Info -->
-          <div class="sidebar-card" :class="{ animate: contentVisible }" style="transition-delay: 100ms;">
-            <div class="sidebar-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <span>Pejabat Bappeda</span>
-            </div>
-            <div class="official-card">
-              <div class="official-photo">
-                <img src="https://picsum.photos/seed/pejabat-bappeda/200/250.jpg" alt="Kepala Bappeda" />
-              </div>
-              <div class="official-info">
-                <span class="official-position">Kepala Bappeda</span>
-                <h4 class="official-name">Dr. H. Muhammad Faisal, M.Si</h4>
-                <p class="official-nip">NIP. 196805151993031005</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pengumuman -->
-          <div class="sidebar-card" :class="{ animate: contentVisible }" style="transition-delay: 200ms;">
-            <div class="sidebar-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-              <span>Pengumuman</span>
-            </div>
-            <ul class="announcement-list">
-              <li v-for="ann in announcements" :key="ann.title">
-                <a href="#">
-                  <span class="ann-dot"></span>
-                  <span class="ann-text">{{ ann.title }}</span>
-                  <span class="ann-date">{{ ann.date }}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Link Terkait -->
-          <div class="sidebar-card" :class="{ animate: contentVisible }" style="transition-delay: 300ms;">
-            <div class="sidebar-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-              <span>Link Terkait</span>
-            </div>
-            <div class="related-links">
-              <a href="#" v-for="link in relatedLinks" :key="link.name" class="related-link-item">
-                <div class="related-link-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </div>
-                <span>{{ link.name }}</span>
-              </a>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-  </main>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue'
 
-// ===== SLIDER =====
-const slides = ref([
+const mobileOpen = ref(false)
+const lang = ref('id')
+const activeNav = ref(-1)
+const activeCard = ref(-1)
+const isScrolled = ref(false)
+const showBackToTop = ref(false)
+const featuresVisible = ref(false)
+const statsVisible = ref(false)
+const newsVisible = ref(false)
+const ctaVisible = ref(false)
+const heroParallax = reactive({ x: 0, y: 0 })
+const homepageRef = ref(null)
+const particleCanvas = ref(null)
+const featuresSection = ref(null)
+const statsSection = ref(null)
+const newsSection = ref(null)
+const ctaSection = ref(null)
+
+const heroLines = ['Membangun Samarinda', 'Menuju Kota Pusat', 'Peradaban']
+
+const navLinks = [
+  { label: 'Beranda' },
+  { label: 'Profil' },
+  { label: 'Bidang', dropdown: true, subs: ['Perencanaan', 'Riset & Pengembangan', 'Pengendalian Pembangunan', 'Statistik & Informasi'] },
+  { label: 'Data & Statistik' },
+  { label: 'Publikasi' },
+  { label: 'Layanan' },
+]
+
+const features = [
   {
-    id: 1,
-    image: 'https://picsum.photos/seed/samarinda-hero1/1400/600.jpg',
-    badge: 'Perencanaan Pembangunan',
-    title: 'Mewujudkan Samarinda Kota Pusat Ekonomi yang Berkelanjutan',
-    desc: 'Melalui perencanaan pembangunan yang terintegrasi dan berbasis data untuk kesejahteraan masyarakat.'
+    title: 'Inovasi Daerah',
+    desc: 'Mendorong inovasi pelayanan publik dan tata kelola pemerintahan yang modern.',
+    svgPaths: '<circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>',
   },
   {
-    id: 2,
-    image: 'https://picsum.photos/seed/samarinda-hero2/1400/600.jpg',
-    badge: 'Musrenbang 2025',
-    title: 'Musrenbang Kota Samarinda Tahun 2025',
-    desc: 'Forum musyawarah perencanaan pembangunan daerah sebagai wujud partisipasi masyarakat.'
+    title: 'Perencanaan',
+    desc: 'Menyusun rencana pembangunan jangka menengah dan panjang yang terukur.',
+    svgPaths: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
   },
   {
-    id: 3,
-    image: 'https://picsum.photos/seed/samarinda-hero3/1400/600.jpg',
-    badge: 'RPJMD 2021-2026',
-    title: 'Rencana Pembangunan Jangka Menengah Daerah',
-    desc: 'Dokumen perencanaan pembangunan daerah untuk periode lima tahunan Kota Samarinda.'
+    title: 'Riset & Data',
+    desc: 'Penelitian mendalam berbasis data untuk mendukung kebijakan pembangunan.',
+    svgPaths: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6M8 11h6"/>',
   },
   {
-    id: 4,
-    image: 'https://picsum.photos/seed/samarinda-hero4/1400/600.jpg',
-    badge: 'Smart City',
-    title: 'Samarinda Menuju Kota Cerdas',
-    desc: 'Transformasi digital dalam pelayanan publik dan perencanaan pembangunan berbasis teknologi.'
-  }
+    title: 'Pembangunan',
+    desc: 'Mengawal dan mengevaluasi pelaksanaan program pembangunan kota.',
+    svgPaths: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/>',
+  },
+]
+
+const stats = reactive([
+  { value: 843, display: '0', suffix: '+', label: 'Program Pembangunan Aktif', bar: 87, barColor: 'linear-gradient(90deg, #f5c832, #f59e0b)', iconBg: 'rgba(245,200,50,0.12)', svg: '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>' },
+  { value: 96, display: '0', suffix: '%', label: 'Tingkat Realisasi Anggaran', bar: 96, barColor: 'linear-gradient(90deg, #34d399, #10b981)', iconBg: 'rgba(52,211,153,0.12)', svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
+  { value: 156, display: '0', suffix: '', label: 'Kecamatan & Kelurahan Terlayani', bar: 72, barColor: 'linear-gradient(90deg, #60a5fa, #3b82f6)', iconBg: 'rgba(96,165,250,0.12)', svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
+  { value: 47, display: '0', suffix: '', label: 'Inovasi Pelayanan Publik', bar: 58, barColor: 'linear-gradient(90deg, #c084fc, #a855f7)', iconBg: 'rgba(192,132,252,0.12)', svg: '<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>' },
 ])
 
-const currentSlide = ref(0)
-const progress = ref(0)
-let sliderInterval = null
-let progressInterval = null
-const SLIDE_DURATION = 6000
+const newsItems = [
+  {
+    img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80',
+    category: 'Perencanaan',
+    date: '15 Des 2024',
+    readTime: '5 menit',
+    title: 'Musrenbang 2025: Warga Samarinda Ikut Suarakan Prioritas Pembangunan',
+    excerpt: 'Lebih dari 3.000 warga turut berpartisipasi dalam Musyawarah Perencanaan Pembangunan tahun ini.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80',
+    category: 'Inovasi',
+    date: '10 Des 2024',
+    readTime: '3 menit',
+    title: 'Samarinda Raih Penghargaan Smart City Nasional 2024',
+    excerpt: 'Kota Samarinda meraih predikat sebagai salah satu kota cerdas terbaik di Indonesia.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&q=80',
+    category: 'Pembangunan',
+    date: '5 Des 2024',
+    readTime: '4 menit',
+    title: 'Progres Pembangunan Jembatan Mahakam IV Capai 78 Persen',
+    excerpt: 'Pembangunan infrastruktur strategis terus dikebut untuk meningkatkan konektivitas kawasan.',
+  },
+]
 
-const startSlider = () => {
-  progress.value = 0
-  progressInterval = setInterval(() => {
-    progress.value += (100 / (SLIDE_DURATION / 30))
-    if (progress.value > 100) progress.value = 100
-  }, 30)
-  sliderInterval = setInterval(() => {
-    currentSlide.value = (currentSlide.value + 1) % slides.value.length
-    progress.value = 0
-  }, SLIDE_DURATION)
+const socials = [
+  { label: 'Facebook', path: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>' },
+  { label: 'Instagram', path: '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>' },
+  { label: 'YouTube', path: '<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>' },
+  { label: 'X/Twitter', path: '<path d="M4 4l16 16M20 4L4 20"/>' },
+]
+
+const footerGroups = [
+  { title: 'Navigasi', links: ['Beranda', 'Profil', 'Bidang', 'Data & Statistik', 'Publikasi', 'Layanan'] },
+  { title: 'Layanan', links: ['Perizinan Online', 'Pengaduan Masyarakat', 'Permohonan Data', 'FAQ', 'Kontak'] },
+  { title: 'Terkait', links: ['Pemkot Samarinda', 'DPRD Samarinda', 'BPS Kaltim', 'Kemenkeu RI', 'Kemendagri'] },
+]
+
+const heroBgStyle = computed(() => ({
+  transform: `translate(${heroParallax.x * 0.015}px, ${heroParallax.y * 0.015}px) scale(1.05)`,
+}))
+const heroContentStyle = computed(() => ({
+  transform: `translate(${heroParallax.x * 0.02}px, ${heroParallax.y * 0.02}px)`,
+}))
+
+function onHeroMouseMove(e) {
+  const rect = e.currentTarget.getBoundingClientRect()
+  heroParallax.x = (e.clientX - rect.left - rect.width / 2)
+  heroParallax.y = (e.clientY - rect.top - rect.height / 2)
 }
 
-const pauseSlider = () => {
-  clearInterval(sliderInterval)
-  clearInterval(progressInterval)
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-const resumeSlider = () => {
-  startSlider()
+function animateCounters() {
+  stats.forEach(stat => {
+    const duration = 2000
+    const start = performance.now()
+    function tick(now) {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      stat.display = Math.round(stat.value * eased).toLocaleString('id-ID')
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  })
 }
 
-const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % slides.value.length
-  progress.value = 0
-  pauseSlider()
-  resumeSlider()
+let particles = []
+let animFrame = null
+
+function initParticles() {
+  const canvas = particleCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const resize = () => {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  const count = Math.min(80, Math.floor(window.innerWidth / 18))
+  particles = Array.from({ length: count }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.5,
+    dx: (Math.random() - 0.5) * 0.3,
+    dy: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.5 + 0.15,
+  }))
+
+  let mouse = { x: -9999, y: -9999 }
+  canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY })
+  canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999 })
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    particles.forEach(p => {
+      p.x += p.dx
+      p.y += p.dy
+      if (p.x < 0) p.x = canvas.width
+      if (p.x > canvas.width) p.x = 0
+      if (p.y < 0) p.y = canvas.height
+      if (p.y > canvas.height) p.y = 0
+
+      const dist = Math.hypot(p.x - mouse.x, p.y - mouse.y)
+      const boost = dist < 150 ? (1 - dist / 150) * 0.6 : 0
+
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.r + boost * 2, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(245, 200, 50, ${p.opacity + boost})`
+      ctx.fill()
+    })
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const d = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y)
+        if (d < 120) {
+          ctx.beginPath()
+          ctx.moveTo(particles[i].x, particles[i].y)
+          ctx.lineTo(particles[j].x, particles[j].y)
+          ctx.strokeStyle = `rgba(245, 200, 50, ${0.08 * (1 - d / 120)})`
+          ctx.lineWidth = 0.6
+          ctx.stroke()
+        }
+      }
+    }
+    animFrame = requestAnimationFrame(draw)
+  }
+  draw()
 }
 
-const prevSlide = () => {
-  currentSlide.value = (currentSlide.value - 1 + slides.value.length) % slides.value.length
-  progress.value = 0
-  pauseSlider()
-  resumeSlider()
-}
-
-const goToSlide = (i) => {
-  currentSlide.value = i
-  progress.value = 0
-  pauseSlider()
-  resumeSlider()
-}
-
-// ===== SCROLL ANIMATIONS =====
-const welcomeRef = ref(null)
-const statsRef = ref(null)
-const contentRef = ref(null)
-const welcomeVisible = ref(false)
-const statsVisible = ref(false)
-const contentVisible = ref(false)
-
-let observer = null
-
-const setupObserver = () => {
-  observer = new IntersectionObserver((entries) => {
+function setupObservers() {
+  const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        if (entry.target === welcomeRef.value) welcomeVisible.value = true
-        if (entry.target === statsRef.value) statsVisible.value = true
-        if (entry.target === contentRef.value) contentVisible.value = true
+        if (entry.target === featuresSection.value) featuresVisible.value = true
+        if (entry.target === statsSection.value) {
+          statsVisible.value = true
+          nextTick(animateCounters)
+        }
+        if (entry.target === newsSection.value) newsVisible.value = true
+        if (entry.target === ctaSection.value) ctaVisible.value = true
       }
     })
-  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' })
+  }, { threshold: 0.15 })
 
-  if (welcomeRef.value) observer.observe(welcomeRef.value)
-  if (statsRef.value) observer.observe(statsRef.value)
-  if (contentRef.value) observer.observe(contentRef.value)
+  if (featuresSection.value) observer.observe(featuresSection.value)
+  if (statsSection.value) observer.observe(statsSection.value)
+  if (newsSection.value) observer.observe(newsSection.value)
+  if (ctaSection.value) observer.observe(ctaSection.value)
 }
 
-// ===== DATA =====
-const stats = ref([
-  { value: '47', label: 'Kecamatan & Kelurahan' },
-  { value: '1.200+', label: 'Program Pembangunan' },
-  { value: '850+', label: 'Kegiatan Tahun 2024' },
-  { value: '3,8 Jt', label: 'Populasi Samarinda' }
-])
+function onScroll() {
+  isScrolled.value = window.scrollY > 40
+  showBackToTop.value = window.scrollY > 600
+}
 
-const news = ref([
-  {
-    image: 'https://picsum.photos/seed/bappeda-news1/800/450.jpg',
-    category: 'Rapat',
-    date: '15 Desember 2024',
-    title: 'Rapat Koordinasi Penyusunan RKPD Tahun Anggaran 2025',
-    excerpt: 'Bappeda Kota Samarinda menggelar rapat koordinasi penyusunan Rencana Kerja Pemerintah Daerah (RKPD) tahun 2025 yang dihadiri oleh seluruh Perangkat Daerah.'
-  },
-  {
-    image: 'https://picsum.photos/seed/bappeda-news2/600/400.jpg',
-    category: 'Sosialisasi',
-    date: '12 Desember 2024',
-    title: 'Sosialisasi Peraturan Daerah tentang RTRW Kota Samarinda',
-    excerpt: 'Kegiatan sosialisasi Perda RTRW dilaksanakan untuk membangun pemahaman bersama terkait tata ruang wilayah kota.'
-  },
-  {
-    image: 'https://picsum.photos/seed/bappeda-news3/600/400.jpg',
-    category: 'Forum',
-    date: '08 Desember 2024',
-    title: 'Forum Konsultasi Publik Penyusunan RPJMD Kota Samarinda',
-    excerpt: 'Forum konsultasi publik ini melibatkan berbagai elemen masyarakat dalam penyusunan dokumen RPJMD.'
-  },
-  {
-    image: 'https://picsum.photos/seed/bappeda-news4/600/400.jpg',
-    category: 'Penghargaan',
-    date: '05 Desember 2024',
-    title: 'Bappeda Samarinda Raih Penghargaan Penyelenggaraan Musrenbang Terbaik',
-    excerpt: 'Penghargaan diberikan oleh Kementerian Dalam Negeri atas keberhasilan penyelenggaraan Musrenbang tahun 2024.'
-  }
-])
-
-const gallery = ref([
-  { src: 'https://picsum.photos/seed/galeri-bappeda1/800/500.jpg', caption: 'Musrenbang Kota 2024' },
-  { src: 'https://picsum.photos/seed/galeri-bappeda2/400/300.jpg', caption: 'Rapat Koordinasi OPD' },
-  { src: 'https://picsum.photos/seed/galeri-bappeda3/400/300.jpg', caption: 'Forum Konsultasi Publik' },
-  { src: 'https://picsum.photos/seed/galeri-bappeda4/400/300.jpg', caption: 'Sosialisasi Program' },
-  { src: 'https://picsum.photos/seed/galeri-bappeda5/400/300.jpg', caption: 'Kunjungan Kerja' },
-  { src: 'https://picsum.photos/seed/galeri-bappeda6/400/300.jpg', caption: 'Penandatanganan MoU' }
-])
-
-const announcements = ref([
-  { title: 'Pengumuman Jadwal Musrenbang Kecamatan', date: '20 Des' },
-  { title: 'Rekrutmen Tenaga Ahli Bappeda', date: '18 Des' },
-  { title: 'Permohonan Data Pembangunan 2024', date: '15 Des' },
-  { title: 'Publikasi Laporan Kinerja 2024', date: '10 Des' },
-  { title: 'Survey Kepuasan Masyarakat', date: '05 Des' }
-])
-
-const relatedLinks = ref([
-  { name: 'Pemerintah Kota Samarinda' },
-  { name: 'BPS Kota Samarinda' },
-  { name: 'Kemendagri RI' },
-  { name: 'Bappenas RI' },
-  { name: 'Pemerintah Provinsi Kaltim' }
-])
-
-// ===== LIFECYCLE =====
 onMounted(() => {
-  startSlider()
-  setupObserver()
+  window.addEventListener('scroll', onScroll, { passive: true })
+  initParticles()
+  nextTick(setupObservers)
 })
 
 onUnmounted(() => {
-  pauseSlider()
-  if (observer) observer.disconnect()
+  window.removeEventListener('scroll', onScroll)
+  if (animFrame) cancelAnimationFrame(animFrame)
 })
 </script>
 
-<style scoped>
-/* ===== HERO SLIDER ===== */
-.hero-slider {
-  position: relative;
-  width: 100%;
-  height: 560px;
-  overflow: hidden;
-  background: #0B1D33;
-}
-.slider-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-}
-.hero-slide img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(11,29,51,0.95) 0%,
-    rgba(11,29,51,0.6) 40%,
-    rgba(11,29,51,0.2) 70%,
-    rgba(11,29,51,0.3) 100%
-  );
-}
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px 64px;
-  width: 100%;
-}
-.hero-badge {
-  display: inline-block;
-  padding: 6px 16px;
-  background: rgba(212,168,67,0.2);
-  border: 1px solid rgba(212,168,67,0.4);
-  color: #D4A843;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  backdrop-filter: blur(8px);
-}
-.hero-title {
-  font-size: 36px;
-  font-weight: 700;
-  color: #FFFFFF;
-  line-height: 1.2;
-  margin: 0 0 14px;
-  max-width: 700px;
-}
-.hero-desc {
-  font-size: 15px;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.6;
-  margin: 0 0 28px;
-  max-width: 550px;
-}
-.hero-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  background: #D4A843;
-  color: #0B1D33;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  border-radius: 12px;
-  transition: all 0.3s;
-  letter-spacing: 0.3px;
-}
-.hero-btn:hover {
-  background: #E8BE5A;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(212,168,67,0.35);
-}
-
-/* Slider Controls */
-.slider-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.2);
-  background: rgba(11,29,51,0.4);
-  backdrop-filter: blur(8px);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  opacity: 0;
-}
-.hero-slider:hover .slider-arrow {
-  opacity: 1;
-}
-.slider-arrow:hover {
-  background: rgba(212,168,67,0.8);
-  border-color: #D4A843;
-  color: #0B1D33;
-}
-.slider-prev { left: 24px; }
-.slider-next { right: 24px; }
-
-/* Dots */
-.slider-dots {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  gap: 8px;
-}
-.slider-dot {
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.2);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  overflow: hidden;
-  transition: all 0.3s;
-}
-.slider-dot.active {
-  background: rgba(255,255,255,0.15);
-  width: 56px;
-}
-.dot-progress {
-  display: block;
-  height: 100%;
-  background: #D4A843;
-  border-radius: 2px;
-  transition: width 0.1s linear;
-}
-
-/* Counter */
-.slide-counter {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  z-index: 10;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-variant-numeric: tabular-nums;
-}
-.counter-current {
-  font-size: 24px;
-  font-weight: 700;
-  color: #D4A843;
-}
-.counter-sep {
-  font-size: 14px;
-  color: rgba(255,255,255,0.3);
-  margin: 0 2px;
-}
-.counter-total {
-  font-size: 14px;
-  color: rgba(255,255,255,0.4);
-}
-
-/* Hero Transition */
-.hero-fade-enter-active, .hero-fade-leave-active {
-  transition: opacity 0.8s ease;
-}
-.hero-fade-enter-from, .hero-fade-leave-to {
-  opacity: 0;
-}
-
-/* ===== WELCOME SECTION ===== */
-.welcome-section {
-  background: #FFFFFF;
-  padding: 80px 24px;
-  text-align: center;
-}
-.welcome-inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-.welcome-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
-  background: rgba(212,168,67,0.08);
-  margin-bottom: 28px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s cubic-bezier(0.4,0,0.2,1);
-}
-.welcome-title {
-  font-size: 30px;
-  font-weight: 700;
-  color: #0B1D33;
-  margin: 0 0 8px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s;
-}
-.welcome-subtitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: #D4A843;
-  margin: 0 0 24px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s cubic-bezier(0.4,0,0.2,1) 0.15s;
-}
-.welcome-desc {
-  font-size: 15px;
-  color: #64748B;
-  line-height: 1.8;
+<!-- ═══════ GLOBAL RESET (tanpa scoped) — menghilangkan putih di kiri/kanan ═══════ -->
+<style>
+html, body {
   margin: 0;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s cubic-bezier(0.4,0,0.2,1) 0.2s;
-}
-.welcome-icon.animate, .welcome-title.animate, .welcome-subtitle.animate, .welcome-desc.animate {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ===== STATS BAR ===== */
-.stats-bar {
-  background: linear-gradient(135deg, #0B1D33 0%, #1a3a5c 100%);
   padding: 0;
+  background: #060e27;
+  overflow-x: hidden;
+}
+</style>
+
+<!-- ═══════ SCOPED STYLES ═══════ -->
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.homepage {
+  font-family: 'Poppins', sans-serif;
+  width: 100%;
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
-}
-.stats-bar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.stats-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-.stat-item {
-  padding: 40px 24px;
-  text-align: center;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  opacity: 0;
-  transform: translateY(15px);
-  transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
-}
-.stat-item:last-child {
-  border-right: none;
-}
-.stat-item.animate {
-  opacity: 1;
-  transform: translateY(0);
-}
-.stat-item:nth-child(2).animate { transition-delay: 0.1s; }
-.stat-item:nth-child(3).animate { transition-delay: 0.2s; }
-.stat-item:nth-child(4).animate { transition-delay: 0.3s; }
-.stat-number {
-  font-size: 32px;
-  font-weight: 800;
-  color: #D4A843;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.stat-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-.stat-item:hover .stat-number {
-  transform: scale(1.05);
-  transition: transform 0.3s;
+  background: #060e27;
+  color: #fff;
 }
 
-/* ===== CONTENT SECTION ===== */
-.content-section {
-  background: #F5F7FA;
-  padding: 64px 0 80px;
-}
-.content-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 40px;
-  align-items: start;
-}
-
-/* Section Header */
-.section-header {
+/* ═══════════ NAVBAR ═══════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 999;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  padding: 0 48px;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+.navbar.scrolled {
+  background: rgba(6, 14, 39, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255,255,255,0.06);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+.navbar-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.logo-wrapper {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(245,195,50,0.5);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.logo-wrapper:hover {
+  border-color: rgba(245,195,50,0.9);
+  box-shadow: 0 0 20px rgba(245,195,50,0.2);
+}
+.logo-img { width: 34px; height: 34px; object-fit: contain; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1.5px; }
+.brand-city { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.55); }
+
+.nav-links { display: flex; align-items: center; list-style: none; gap: 2px; }
+.nav-links > li { position: relative; }
+.nav-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 8px;
+  transition: all 0.25s;
+  white-space: nowrap;
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px; left: 50%; transform: translateX(-50%) scaleX(0);
+  width: 18px; height: 2px;
+  background: #f5c832;
+  border-radius: 2px;
+  transition: transform 0.25s;
+}
+.nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-link:hover::after, .nav-link.active::after { transform: translateX(-50%) scaleX(1); }
+.chevron {
+  width: 13px; height: 13px; opacity: 0.5;
+  transition: transform 0.25s, opacity 0.25s;
+}
+.chevron.rotated { transform: rotate(180deg); opacity: 1; }
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px); left: 0;
+  min-width: 240px;
+  background: rgba(10, 20, 55, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+.dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.dropdown-item:hover { background: rgba(245,195,50,0.1); color: #f5c832; }
+.dropdown-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.2s;
+}
+.dropdown-item:hover .dropdown-dot { background: #f5c832; }
+
+.dropdown-enter-active { transition: all 0.25s ease-out; }
+.dropdown-leave-active { transition: all 0.15s ease-in; }
+.dropdown-enter-from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+.dropdown-leave-to { opacity: 0; transform: translateY(-4px) scale(0.98); }
+
+.navbar-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.lang-switch { display: flex; align-items: center; gap: 5px; }
+.lang { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); cursor: pointer; transition: color 0.2s; }
+.lang-active { color: #fff; font-weight: 700; }
+.lang-divider { color: rgba(255,255,255,0.25); font-size: 13px; }
+
+.btn-akses {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 22px;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.btn-akses:hover {
+  background: rgba(245,195,50,0.12);
+  border-color: rgba(245,195,50,0.6);
+  color: #f5c832;
+}
+.btn-arrow { width: 15px; height: 15px; transition: transform 0.25s; }
+.btn-akses:hover .btn-arrow { transform: translateX(3px); }
+
+.hamburger {
+  display: none;
+  flex-direction: column; justify-content: center;
+  gap: 5px; width: 36px; height: 36px;
+  background: transparent; border: none; cursor: pointer; padding: 4px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: #fff; border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+.mobile-menu {
+  position: fixed; top: 72px; left: 0; right: 0; z-index: 998;
+  background: rgba(6, 14, 39, 0.98);
+  backdrop-filter: blur(20px);
+  display: flex; flex-direction: column;
+  padding: 16px 24px 24px; gap: 2px;
+}
+.mobile-menu a {
+  color: rgba(255,255,255,0.75); text-decoration: none;
+  font-size: 14px; font-weight: 500;
+  padding: 12px 14px; border-radius: 10px;
+  transition: all 0.2s;
+}
+.mobile-menu a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.mobile-menu-bottom {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 12px; padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.mobile-btn { border-color: rgba(245,195,50,0.5); color: #f5c832; }
+.mobileMenu-enter-active { transition: all 0.3s ease-out; }
+.mobileMenu-leave-active { transition: all 0.2s ease-in; }
+.mobileMenu-enter-from { opacity: 0; transform: translateY(-16px); }
+.mobileMenu-leave-to { opacity: 0; transform: translateY(-8px); }
+
+/* ═══════════ HERO ═══════════ */
+.hero {
+  position: relative; width: 100%; height: 100vh;
+  min-height: 660px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: -40px; z-index: 0;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+.hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.particle-canvas { position: absolute; inset: 0; z-index: 1; pointer-events: auto; }
+
+.overlay-left {
+  position: absolute; inset: 0; z-index: 2;
+  background: radial-gradient(ellipse at 40% 50%, rgba(6,14,39,0.7) 0%, rgba(6,14,39,0.92) 70%);
+}
+.overlay-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 40%; z-index: 2;
+  background: linear-gradient(to top, #060e27 0%, transparent 100%);
+}
+
+.glow-orb {
+  position: absolute; border-radius: 50%; z-index: 2;
+  filter: blur(80px); pointer-events: none;
+}
+.orb-1 {
+  width: 350px; height: 350px;
+  background: rgba(245,195,50,0.07);
+  top: 15%; left: 20%;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb-2 {
+  width: 250px; height: 250px;
+  background: rgba(59,130,246,0.05);
+  bottom: 25%; right: 20%;
+  animation: orbFloat 10s ease-in-out infinite reverse;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(25px, -18px); }
+}
+
+.hero-content {
+  position: relative; z-index: 3;
+  text-align: center;
+  max-width: 820px;
+  padding: 0 24px;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 18px 7px 12px;
+  background: rgba(245,195,50,0.1);
+  border: 1px solid rgba(245,195,50,0.25);
+  border-radius: 100px;
+  font-size: 12px; font-weight: 600; color: #f5c832;
+  margin-bottom: 24px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.1s;
+}
+.badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #f5c832;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+.hero-title { margin-bottom: 20px; }
+.title-line {
+  display: block;
+  font-size: clamp(28px, 4.2vw, 54px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  animation: fadeUp 0.7s ease both;
+}
+.title-line:nth-child(2) {
+  background: linear-gradient(135deg, #f5c832, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(13px, 1.25vw, 15px);
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+  margin-bottom: 32px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.65s;
+}
+
+.hero-actions {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.8s;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: linear-gradient(135deg, #f5c832, #e6a817);
+  color: #0a0f2e;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  border-radius: 12px;
+  border: none; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(245,195,50,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(245,195,50,0.45);
+}
+.btn-icon { width: 18px; height: 18px; transition: transform 0.25s; }
+.btn-primary:hover .btn-icon { transform: translateX(3px); }
+.btn-lg { padding: 16px 34px; font-size: 15px; border-radius: 14px; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.85);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+}
+.btn-icon-sm { width: 18px; height: 18px; }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 30px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85);
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px; font-weight: 600;
+  text-decoration: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-indicator {
+  position: absolute; bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 1.2s;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-line::after {
+  content: '';
+  position: absolute; top: -100%; left: 0;
+  width: 100%; height: 50%;
+  background: rgba(245,195,50,0.8);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0% { top: -50%; }
+  100% { top: 150%; }
+}
+.scroll-indicator span {
+  font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ═══════════ FEATURES SECTION ═══════════ */
+.features-section {
+  position: relative;
+  padding: 80px 0 90px;
+  background: #060e27;
+}
+.features-container {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 30px 24px 26px;
+  color: #fff; cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0; transform: translateY(30px);
+  overflow: hidden;
+}
+.card.visible { opacity: 1; transform: translateY(0); }
+.card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(160deg, rgba(245,195,50,0.4) 0%, transparent 50%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+  transition: opacity 0.4s;
 }
-.section-header.animate {
-  opacity: 1;
-  transform: translateY(0);
+.card:hover::before { opacity: 1; }
+.card:hover {
+  background: rgba(14, 28, 70, 0.55);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
-.section-header-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+
+.card-glow {
+  position: absolute; top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0;
+  transition: opacity 0.4s;
 }
-.section-badge {
-  padding: 5px 12px;
-  background: rgba(212,168,67,0.1);
-  color: #D4A843;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border-radius: 6px;
+.card:hover .card-glow { opacity: 1; }
+.glow-0 { background: rgba(245,195,50,0.2); }
+.glow-1 { background: rgba(52,211,153,0.2); }
+.glow-2 { background: rgba(96,165,250,0.2); }
+.glow-3 { background: rgba(192,132,252,0.2); }
+
+.card-icon-wrap {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: rgba(245,195,50,0.08);
+  border: 1px solid rgba(245,195,50,0.18);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; color: #f5c832;
+  transition: all 0.35s;
+}
+.card:hover .card-icon-wrap {
+  background: rgba(245,195,50,0.16);
+  border-color: rgba(245,195,50,0.35);
+  transform: scale(1.08);
+}
+.card-icon { width: 24px; height: 24px; }
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.card-desc {
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.5); line-height: 1.75;
+  margin-bottom: 18px;
+}
+.card-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.35);
+  transition: color 0.25s;
+}
+.card:hover .card-link { color: #f5c832; }
+.link-arrow { width: 14px; height: 14px; transition: transform 0.25s; }
+.card:hover .link-arrow { transform: translateX(4px); }
+
+/* ═══════════ STATS SECTION ═══════════ */
+.stats-section {
+  position: relative; padding: 90px 0 80px;
+  background: linear-gradient(180deg, #060e27 0%, #0a1435 100%);
+  overflow: hidden;
+}
+.stats-bg-pattern {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(245,195,50,0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.stats-container {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+}
+
+.section-header {
+  margin-bottom: 48px;
+  opacity: 0; transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.section-header.visible { opacity: 1; transform: translateY(0); }
+.section-tag {
+  display: inline-block;
+  font-size: 11px; font-weight: 700;
+  color: #f5c832;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 12px;
 }
 .section-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0B1D33;
-  margin: 0;
-}
-.section-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #D4A843;
-  text-decoration: none;
-  transition: all 0.25s;
-  padding: 8px 16px;
-  border-radius: 8px;
-}
-.section-link:hover {
-  background: rgba(212,168,67,0.08);
-  color: #B8922E;
+  font-size: clamp(22px, 2.8vw, 38px);
+  font-weight: 800; color: #fff;
+  line-height: 1.2;
 }
 
-/* ===== NEWS FEATURED ===== */
-.news-featured {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: #FFFFFF;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
-  margin-bottom: 28px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s;
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 28px 24px;
+  opacity: 0; transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.news-featured.animate {
-  opacity: 1;
-  transform: translateY(0);
+.stat-card.visible { opacity: 1; transform: translateY(0); }
+.stat-card:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateY(-4px);
 }
-.news-featured-img {
-  position: relative;
-  min-height: 280px;
-  overflow: hidden;
+.stat-icon-wrap {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
 }
-.news-featured-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
+.stat-icon { width: 22px; height: 22px; color: #fff; }
+.stat-value {
+  font-size: 34px; font-weight: 900; color: #fff;
+  line-height: 1; margin-bottom: 6px;
+  letter-spacing: -1px;
 }
-.news-featured:hover .news-featured-img img {
-  transform: scale(1.05);
+.stat-label {
+  font-size: 12.5px; font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5; margin-bottom: 18px;
 }
-.news-featured-body {
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.news-category {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 5px 12px;
-  background: rgba(212,168,67,0.9);
-  color: #0B1D33;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border-radius: 6px;
-  backdrop-filter: blur(4px);
-}
-.news-date {
-  font-size: 12px;
-  color: #94A3B8;
-  font-weight: 500;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.news-date::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #D4A843;
-}
-.news-featured-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #0B1D33;
-  line-height: 1.35;
-  margin: 0 0 14px;
-}
-.news-featured-title a {
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.25s;
-}
-.news-featured-title a:hover {
-  color: #D4A843;
-}
-.news-featured-excerpt {
-  font-size: 13.5px;
-  color: #64748B;
-  line-height: 1.7;
-  margin: 0 0 20px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+.stat-bar-track {
+  height: 4px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
   overflow: hidden;
 }
-.news-read-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #D4A843;
-  text-decoration: none;
-  transition: all 0.25s;
-}
-.news-read-more:hover {
-  gap: 10px;
-  color: #B8922E;
+.stat-bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* ===== NEWS GRID ===== */
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+/* ═══════════ NEWS SECTION ═══════════ */
+.news-section {
+  position: relative; padding: 80px 0 100px;
+  background: #0a1435;
 }
+.news-container {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+}
+.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
 .news-card {
-  background: #FFFFFF;
-  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 0; transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
 }
-.news-card.animate {
-  opacity: 1;
-  transform: translateY(0);
-}
+.news-card.visible { opacity: 1; transform: translateY(0); }
 .news-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
-.news-card-img {
-  position: relative;
-  height: 180px;
-  overflow: hidden;
+.news-img-wrap { position: relative; overflow: hidden; height: 200px; }
+.news-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.news-card:hover .news-img { transform: scale(1.06); }
+.news-category {
+  position: absolute; top: 14px; left: 14px;
+  padding: 5px 14px;
+  background: rgba(245,195,50,0.9);
+  color: #0a0f2e;
+  font-size: 11px; font-weight: 700;
+  border-radius: 100px;
 }
-.news-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
+.news-body { padding: 22px 24px 26px; }
+.news-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.news-date { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); }
+.news-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+.news-read { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); }
+.news-title {
+  font-size: 16px; font-weight: 700; color: #fff;
+  line-height: 1.45; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.news-card:hover .news-card-img img {
-  transform: scale(1.08);
+.news-excerpt {
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.4); line-height: 1.7;
+  margin-bottom: 18px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.news-card-body {
-  padding: 20px;
+.news-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600;
+  color: #f5c832; text-decoration: none;
+  transition: gap 0.25s;
 }
-.news-card-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0B1D33;
-  line-height: 1.4;
-  margin: 0 0 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.news-link:hover { gap: 10px; }
+.link-arrow-sm { width: 15px; height: 15px; }
+
+.news-cta {
+  text-align: center;
+  opacity: 0; transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.news-card-title a {
-  color: inherit;
+.news-cta.visible { opacity: 1; transform: translateY(0); }
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  border: 1.5px solid rgba(245,195,50,0.4);
+  color: #f5c832;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 600;
   text-decoration: none;
-  transition: color 0.25s;
-}
-.news-card-title a:hover {
-  color: #D4A843;
-}
-.news-card-excerpt {
-  font-size: 13px;
-  color: #64748B;
-  line-height: 1.6;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ===== GALLERY ===== */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 200px;
-  gap: 12px;
-}
-.gallery-item {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.gallery-item.animate {
-  opacity: 1;
-  transform: translateY(0);
-}
-.gallery-large {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
-}
-.gallery-item:hover img {
-  transform: scale(1.08);
-}
-.gallery-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(11,29,51,0.85), rgba(11,29,51,0.1));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-.gallery-item:hover .gallery-overlay {
-  opacity: 1;
-}
-.gallery-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(212,168,67,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: scale(0.7);
-  transition: transform 0.35s ease;
-}
-.gallery-item:hover .gallery-icon {
-  transform: scale(1);
-}
-.gallery-caption {
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-/* ===== SIDEBAR ===== */
-.content-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: sticky;
-  top: 96px;
-}
-.sidebar-card {
-  background: #FFFFFF;
   border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-outline:hover {
+  background: rgba(245,195,50,0.1);
+  border-color: rgba(245,195,50,0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245,195,50,0.15);
+}
+
+/* ═══════════ CTA SECTION ═══════════ */
+.cta-section {
+  position: relative; padding: 100px 48px;
+  background: #060e27;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  opacity: 0;
-  transform: translateX(20px);
-  transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+  display: flex; align-items: center; justify-content: center;
 }
-.sidebar-card.animate {
-  opacity: 1;
-  transform: translateX(0);
-}
-.sidebar-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #F1F5F9;
-  font-size: 13px;
-  font-weight: 700;
-  color: #0B1D33;
-}
-.sidebar-card-header svg {
-  color: #D4A843;
-  flex-shrink: 0;
-}
-
-/* QR Code */
-.qr-code-area {
-  padding: 24px 20px;
-  text-align: center;
-}
-.qr-placeholder {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 14px;
-  border: 2px dashed #E2E8F0;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F8FAFC;
-}
-.qr-text {
-  font-size: 12px;
-  color: #94A3B8;
-  margin: 0;
-}
-
-/* Official Card */
-.official-card {
-  padding: 20px;
-  text-align: center;
-}
-.official-photo {
-  width: 100px;
-  height: 125px;
-  margin: 0 auto 16px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 3px solid rgba(212,168,67,0.2);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.official-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.official-position {
-  font-size: 11px;
-  font-weight: 600;
-  color: #D4A843;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.official-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0B1D33;
-  margin: 6px 0 4px;
-}
-.official-nip {
-  font-size: 11px;
-  color: #94A3B8;
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Announcements */
-.announcement-list {
-  list-style: none;
-  padding: 8px 0;
-  margin: 0;
-}
-.announcement-list li {
-  border-bottom: 1px solid #F1F5F9;
-}
-.announcement-list li:last-child {
-  border-bottom: none;
-}
-.announcement-list a {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 20px;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.announcement-list a:hover {
-  background: #F8FAFC;
-}
-.ann-dot {
-  width: 6px;
-  height: 6px;
+.cta-glow {
+  position: absolute;
+  width: 600px; height: 600px;
   border-radius: 50%;
-  background: #D4A843;
-  flex-shrink: 0;
-  margin-top: 7px;
+  background: radial-gradient(circle, rgba(245,195,50,0.08) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
-.ann-text {
-  flex: 1;
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.5;
+.cta-content {
+  position: relative; z-index: 1; text-align: center;
+  max-width: 680px;
+  opacity: 0; transform: translateY(30px);
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.announcement-list a:hover .ann-text {
-  color: #0B1D33;
+.cta-content.visible { opacity: 1; transform: translateY(0); }
+.cta-title {
+  font-size: clamp(22px, 2.8vw, 36px);
+  font-weight: 800; color: #fff;
+  line-height: 1.25; margin-bottom: 16px;
 }
-.ann-date {
-  font-size: 11px;
-  color: #94A3B8;
-  flex-shrink: 0;
-  margin-top: 2px;
+.cta-desc {
+  font-size: 15px; font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.75; margin-bottom: 36px;
+}
+.cta-buttons {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  flex-wrap: wrap;
 }
 
-/* Related Links */
-.related-links {
-  padding: 8px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: #040a1e;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 60px 0 0;
 }
-.related-link-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  font-size: 13px;
-  color: #4A5568;
+.footer-container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.footer-logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.footer-desc {
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.75; margin-bottom: 24px;
+}
+.footer-socials { display: flex; gap: 10px; }
+.social-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.45);
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s;
+  transition: all 0.25s;
 }
-.related-link-item:hover {
-  background: #F8FAFC;
-  color: #0B1D33;
-  padding-left: 16px;
+.social-icon svg { width: 16px; height: 16px; }
+.social-icon:hover {
+  background: rgba(245,195,50,0.12);
+  border-color: rgba(245,195,50,0.3);
+  color: #f5c832;
+  transform: translateY(-2px);
 }
-.related-link-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: rgba(212,168,67,0.08);
-  color: #D4A843;
-  flex-shrink: 0;
+.footer-group-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 18px; }
+.footer-links-group { display: flex; flex-direction: column; gap: 4px; }
+.footer-link {
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.footer-link:hover { color: #f5c832; padding-left: 4px; }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 0;
+  font-size: 12px; font-weight: 400;
+  color: rgba(255,255,255,0.3);
+}
+.footer-bottom-links { display: flex; gap: 24px; }
+.footer-bottom-links a {
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-bottom-links a:hover { color: rgba(255,255,255,0.7); }
+
+/* Back to top */
+.back-to-top {
+  position: fixed; bottom: 32px; right: 32px;
+  z-index: 900;
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: rgba(245,195,50,0.9);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #0a0f2e;
+  box-shadow: 0 4px 20px rgba(245,195,50,0.35);
+  transition: all 0.3s;
+}
+.back-to-top svg { width: 20px; height: 20px; }
+.back-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(245,195,50,0.5);
+}
+.fadeScale-enter-active { transition: all 0.3s ease-out; }
+.fadeScale-leave-active { transition: all 0.2s ease-in; }
+.fadeScale-enter-from { opacity: 0; transform: scale(0.8) translateY(10px); }
+.fadeScale-leave-to { opacity: 0; transform: scale(0.9); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
-  .content-inner {
-    grid-template-columns: 1fr 320px;
-    gap: 32px;
-  }
-}
 @media (max-width: 1024px) {
-  .hero-slider {
-    height: 440px;
-  }
-  .hero-title {
-    font-size: 28px;
-  }
-  .content-inner {
-    grid-template-columns: 1fr;
-  }
-  .content-sidebar {
-    position: static;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .navbar { padding: 0 24px; }
+  .features-container, .stats-container, .news-container { padding: 0 24px; }
+  .cta-section { padding: 80px 24px; }
+  .footer-container { padding: 0 24px; }
+  .cards-grid { gap: 16px; }
 }
+
 @media (max-width: 768px) {
-  .hero-slider {
-    height: 400px;
-  }
-  .hero-title {
-    font-size: 22px;
-  }
-  .hero-desc {
-    font-size: 13px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .hero-content {
-    padding-bottom: 56px;
-  }
-  .slide-counter {
-    display: none;
-  }
-  .stats-inner {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .stat-item:nth-child(2) {
-    border-right: none;
-  }
-  .news-featured {
-    grid-template-columns: 1fr;
-  }
-  .news-featured-img {
-    min-height: 200px;
-  }
-  .news-grid {
-    grid-template-columns: 1fr;
-  }
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 160px;
-  }
-  .gallery-large {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
-  .content-sidebar {
-    grid-template-columns: 1fr;
-  }
-  .welcome-section {
-    padding: 56px 24px;
-  }
-  .welcome-title {
-    font-size: 24px;
-  }
+  .nav-links, .navbar-right { display: none; }
+  .hamburger { display: flex; }
+  .hero-content { padding: 0 20px; }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card { padding: 22px 18px; }
+  .card-link { display: none; }
+  .scroll-indicator { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .news-grid { grid-template-columns: 1fr; gap: 18px; }
+  .cta-buttons { flex-direction: column; }
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .br-desktop { display: none; }
+  .hero-actions { flex-direction: column; align-items: center; }
 }
+
 @media (max-width: 480px) {
-  .hero-slider {
-    height: 360px;
-  }
-  .hero-title {
-    font-size: 20px;
-  }
-  .hero-btn {
-    padding: 12px 22px;
-    font-size: 12px;
-  }
-  .slider-dots {
-    bottom: 20px;
-  }
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 180px;
-  }
-  .gallery-large {
-    grid-column: span 1;
-  }
-  .stats-inner {
-    grid-template-columns: 1fr;
-  }
-  .stat-item {
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding: 28px 24px;
-  }
-  .stat-item:last-child {
-    border-bottom: none;
-  }
+  .cards-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-value { font-size: 28px; }
+  .hero-badge { font-size: 11px; }
 }
 </style>
