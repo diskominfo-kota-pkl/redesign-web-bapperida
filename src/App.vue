@@ -1,7 +1,31 @@
+<template>
+  <div id="app">
+    <Header />
+    <main>
+      <router-view />
+    </main>
+    <Footer />
+  </div>
+</template>
+
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
 </script>
 
-<template>
-  <HelloWorld />
-</template>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+}
+
+main {
+  min-height: calc(100vh - 200px);
+}
+</style>
