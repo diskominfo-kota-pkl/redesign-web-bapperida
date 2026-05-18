@@ -153,8 +153,8 @@ const navLinks = [
     to: '/artikel',
     dropdown: true,
     subs: [
-      { label: 'Agenda', to: '/artikel' },
-      { label: 'Pengumuman', to: '/artikel' },
+      { label: 'Agenda', to: '/Agenda' },
+      { label: 'Pengumuman', to: '/Pengumuman' },
       { label: 'Berita', to: '/berita-daerah' },
       { label: 'Artikel', to: '/artikel' },
       { label: 'Galeri', to: '/galeri' },

@@ -16,10 +16,14 @@ import TupoksiPage from '../views/TupoksiPage.vue'
 import ProfilSekretarisPage from '../views/ProfilSekretarisPage.vue'
 import MaklumatPelayananPage from '../views/MaklumatPelayananPage.vue'
 import SejarahSamarindaPage from '../views/SejarahSamarindaPage.vue'
+import AgendaPage from '../views/AgendaPage.vue'
+import PengumumanPage from '../views/PengumumanPage.vue'
 
 const routes = [
     { path: '/', name: 'Home', component: HomePage },
     { path: '/artikel', name: 'Artikel', component: ArtikelPage },
+    { path: '/Agenda', name: 'Agenda', component: AgendaPage },
+    { path: '/Pengumuman', name: 'Pengumuman', component : PengumumanPage },
     { path: '/berita-daerah', name: 'BeritaDaerah', component: BeritaDaerahPage },
     { path: '/berita-nasional', name: 'BeritaNasional', component: BeritaNasionalPage },
     { path: '/siaran-pers', name: 'SiaranPers', component: SiaranPersPage },
