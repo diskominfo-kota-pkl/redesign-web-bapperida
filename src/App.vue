@@ -1,18 +1,15 @@
 <template>
-  <div id="app">
-    <Header />
-    <main>
-      <router-view />
-    </main>
-    <Footer />
-  </div>
+  <Header />
+  
+  <router-view />
+  
+  <Footer />
 </template>
 
 <script setup>
-import Header from './components/Header.vue'
-import Footer from './components/Footer.vue'
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 </script>
-
 <style>
 * {
   margin: 0;
@@ -20,12 +17,13 @@ import Footer from './components/Footer.vue'
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
+html, body {
+  width: 100%;
+  background-color: #060e27;
+  overflow-x: hidden;
 }
 
-main {
-  min-height: calc(100vh - 200px);
+#app {
+  width: 100%;
 }
 </style>

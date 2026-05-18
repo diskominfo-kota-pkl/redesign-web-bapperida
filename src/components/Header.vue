@@ -1,516 +1,414 @@
-<!-- TheHeader.vue -->
 <template>
-  <header class="app-header" :class="{ scrolled: isScrolled }">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <div class="top-inner">
-        <div class="top-contact">
-          <span class="top-item">
-            <i class="fas fa-phone-alt"></i> 0541-203785
-          </span>
-          <span class="top-divider"></span>
-          <span class="top-item">
-            <i class="fas fa-envelope"></i> bappedalitbang@samarindakota.go.id
-          </span>
+  <div class="header-wrapper">
+    <nav class="navbar" :class="{ scrolled: isScrolled }">
+      <div class="navbar-brand">
+        <div class="logo-wrapper">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Lambang_Kota_Samarinda.png/240px-Lambang_Kota_Samarinda.png"
+            alt="Logo BAPPERIDA Samarinda"
+            class="logo-img"
+          />
         </div>
-        <div class="top-right">
-          <a href="https://bapperida.samarindakota.go.id" target="_blank" rel="noopener" class="top-web">
-            <i class="fas fa-globe"></i> bapperida.samarindakota.go.id
-          </a>
+        <div class="brand-text">
+          <span class="brand-name">BAPPERIDA</span>
+          <span class="brand-city">Kota Samarinda</span>
         </div>
       </div>
-    </div>
 
-    <!-- Main Navbar -->
-    <div class="navbar">
-      <div class="nav-inner">
-        <!-- Logo -->
-        <router-link to="/" class="nav-brand">
-          <div class="brand-icon">
-            <span>B</span>
-          </div>
-          <div class="brand-text">
-            <span class="brand-title">BAPPERIDA</span>
-            <span class="brand-sub">Kota Samarinda</span>
-          </div>
-        </router-link>
-
-        <!-- Desktop Nav -->
-        <nav class="nav-menu" :class="{ open: mobileOpen }">
+      <ul class="nav-links">
+        <li
+          v-for="(link, i) in navLinks"
+          :key="i"
+          :class="{ 'has-dropdown': link.dropdown }"
+          @mouseenter="link.dropdown && (activeNav = i)"
+          @mouseleave="link.dropdown && (activeNav = -1)"
+        >
           <router-link
-            v-for="link in navLinks"
-            :key="link.to"
             :to="link.to"
             class="nav-link"
+            :class="{ active: activeNav === i }"
+            @click="mobileOpen = false"
+          >
+            {{ link.label }}
+            <svg v-if="link.dropdown" class="chevron" :class="{ rotated: activeNav === i }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </router-link>
+
+          <Transition name="dropdown">
+            <div v-if="link.dropdown && activeNav === i" class="dropdown-panel">
+              <router-link
+                v-for="(sub, j) in link.subs"
+                :key="j"
+                :to="sub.to"
+                class="dropdown-item"
+                @click="activeNav = -1"
+              >
+                <span class="dropdown-dot"></span>
+                {{ sub.label }}
+              </router-link>
+            </div>
+          </Transition>
+        </li>
+      </ul>
+
+      <div class="navbar-right">
+        <div class="lang-switch">
+          <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
+          <span class="lang-divider">/</span>
+          <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
+        </div>
+        <router-link to="/" class="btn-akses">
+          <span>Akses Layanan</span>
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </router-link>
+      </div>
+
+      <button class="hamburger" :class="{ open: mobileOpen }" @click="mobileOpen = !mobileOpen">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <Transition name="mobileMenu">
+      <div class="mobile-menu" v-if="mobileOpen">
+        <template v-for="(link, i) in navLinks" :key="i">
+          <router-link
+            :to="link.to"
             @click="mobileOpen = false"
           >
             {{ link.label }}
           </router-link>
-        </nav>
-
-        <!-- Nav Actions -->
-        <div class="nav-actions">
-          <button class="nav-search-btn" @click="searchOpen = true" aria-label="Cari">
-            <i class="fas fa-search"></i>
-          </button>
-          <button class="nav-mobile-btn" @click="mobileOpen = !mobileOpen" aria-label="Menu">
-            <i :class="mobileOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Drawer Overlay -->
-    <Transition name="drawer-fade">
-      <div v-if="mobileOpen" class="drawer-overlay" @click="mobileOpen = false"></div>
-    </Transition>
-
-    <!-- Search Modal -->
-    <Transition name="modal-fade">
-      <div v-if="searchOpen" class="search-overlay" @click.self="searchOpen = false">
-        <div class="search-box">
-          <div class="search-input-row">
-            <i class="fas fa-search"></i>
-            <input
-              ref="searchInput"
-              v-model="searchQuery"
-              type="text"
-              placeholder="Cari berita, artikel, layanan..."
-              @keyup.esc="searchOpen = false"
+          <div v-if="link.dropdown" class="mobile-subs">
+            <router-link
+              v-for="(sub, j) in link.subs"
+              :key="j"
+              :to="sub.to"
+              @click="mobileOpen = false"
+              class="mobile-sub-item"
             >
-            <span class="search-kbd">ESC</span>
+              {{ sub.label }}
+            </router-link>
           </div>
-          <div class="search-hint">Tekan <strong>Enter</strong> untuk mencari &middot; <strong>Esc</strong> untuk menutup</div>
+        </template>
+        <div class="mobile-menu-bottom">
+          <div class="lang-switch mobile-lang">
+            <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
+            <span class="lang-divider">/</span>
+            <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
+          </div>
+          <router-link to="/" class="btn-akses mobile-btn">Akses Layanan</router-link>
         </div>
       </div>
     </Transition>
-  </header>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const mobileOpen = ref(false);
+const lang = ref('id');
+const activeNav = ref(-1);
+const isScrolled = ref(false);
 
 const navLinks = [
-  { label: 'Beranda', to: '/' },
-  { label: 'Artikel', to: '/artikel' },
-  { label: 'Berita Daerah', to: '/berita-daerah' },
-  { label: 'Berita Nasional', to: '/berita-nasional' },
-  { label: 'Siaran Pers', to: '/siaran-pers' },
-  { label: 'Jurnal', to: '/jurnal' },
-  { label: 'Penelitian', to: '/penelitian' },
-  { label: 'Galeri', to: '/galeri' },
-  { label: 'Profil Kepala', to: '/profil-kepala' }
-]
+  {
+    label: 'Beranda',
+    to: '/'
+  },
+  {
+    label: 'Profil',
+    to: '/profil/10-program-unggulan',
+    dropdown: true,
+    subs: [
+      { label: '10 Program Unggulan Walikota Samarinda', to: '/profil/10-program-unggulan' },
+      { label: 'Dasar Hukum', to: '/profil/dasar-hukum' },
+      { label: 'Visi & Misi', to: '/profil/visi-misi' },
+      { label: 'Struktur Organisasi', to: '/profil/struktur-organisasi' },
+      { label: 'Tupoksi', to: '/profil/tupoksi' },
+      { label: 'Profil Kepala Badan', to: '/profil/profil-kepala' },
+      { label: 'Profil Sekretaris', to: '/profil/sekretaris' },
+      { label: 'Maklumat Pelayanan', to: '/profil/maklumat-pelayanan' },
+      { label: 'Sejarah Samarinda', to: '/profil/sejarah-samarinda' }
+    ]
+  },
+  {
+    label: 'Bidang',
+    to: '/bidang/perencanaan',
+    dropdown: true,
+    subs: [
+      { label: 'Kepala Badan', to: '/profil/profil-kepala' },
+      { label: 'Sekretariat', to: '/bidang/sekretariat' },
+      { label: 'Bidang Perencanaan', to: '/bidang/perencanaan' },
+      { label: 'Bidang Riset & Pengembangan', to: '/bidang/riset' },
+      { label: 'Bidang Pengendalian Pembangunan', to: '/bidang/pengendalian' },
+      { label: 'Bidang Statistik & Informasi', to: '/bidang/statistik' }
+    ]
+  },
+  {
+    label: 'Berita & Informasi',
+    to: '/artikel',
+    dropdown: true,
+    subs: [
+      { label: 'Agenda', to: '/artikel' },
+      { label: 'Pengumuman', to: '/artikel' },
+      { label: 'Berita', to: '/berita-daerah' },
+      { label: 'Artikel', to: '/artikel' },
+      { label: 'Galeri', to: '/galeri' },
+      { label: 'Video', to: '/artikel' },
+      { label: 'Download', to: '/artikel' }
+    ]
+  },
+  {
+    label: 'PPID Pelaksana',
+    to: '/ppid',
+    dropdown: true,
+    subs: [
+      { label: 'Profil PPID', to: '/ppid' },
+      { label: 'Mekanisme Permohonan Informasi', to: '/ppid' },
+      { label: 'Pengadaan Barang dan Jasa', to: '/ppid' },
+      { label: 'Peraturan, Keputusan & Kebijakan', to: '/ppid' },
+      { label: 'Dokumen SAKIP', to: '/ppid' },
+      { label: 'Laporan Kinerja', to: '/ppid' },
+      { label: 'Laporan Keuangan', to: '/ppid' },
+      { label: 'Rencana Kerja', to: '/ppid' }
+    ]
+  },
+  {
+    label: 'DARURAT',
+    to: '/'
+  }
+];
 
-const isScrolled = ref(false)
-const mobileOpen = ref(false)
-const searchOpen = ref(false)
-const searchQuery = ref('')
-const searchInput = ref(null)
-
-function handleScroll() {
-  isScrolled.value = window.scrollY > 50
+function onScroll() {
+  isScrolled.value = window.scrollY > 40;
 }
-
-function handleKeydown(e) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-    e.preventDefault()
-    searchOpen.value = true
-  }
-  if (e.key === 'Escape') {
-    searchOpen.value = false
-    mobileOpen.value = false
-  }
-}
-
-watch(searchOpen, (val) => {
-  if (val) {
-    nextTick(() => searchInput.value?.focus())
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = ''
-  }
-})
-
-watch(mobileOpen, (val) => {
-  document.body.style.overflow = val ? 'hidden' : ''
-})
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('keydown', handleKeydown)
-  handleScroll()
-})
+  window.addEventListener('scroll', onScroll, { passive: true });
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('keydown', handleKeydown)
-  document.body.style.overflow = ''
-})
+  window.removeEventListener('scroll', onScroll);
+});
 </script>
 
 <style scoped>
-/* ========== VARIABEL ========== */
-:root {
-  --g900: #0A2E1A; --g800: #143D26; --g700: #1B5E30;
-  --g600: #237A3E; --g500: #2E964F; --g400: #4CB872;
-  --g300: #7DD4A0; --g200: #B5E6C8; --g100: #E0F3E8; --g50: #F0FAF3;
-  --gold: #D4A843; --gold-light: #E2C36B; --gold-pale: #F0D98A;
-  --dark: #0F1A14;
-  --gray-800: #1A1F1C; --gray-600: #556159;
-  --gray-500: #6B7A72; --gray-400: #8A9992; --gray-300: #B0BDB7;
-  --gray-200: #D4DDD9; --gray-100: #E8EDEB; --gray-50: #F4F7F6;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ========== TOP BAR ========== */
-.top-bar {
-  background: var(--g900);
-  padding: 0;
-  font-size: 0.74rem;
-  transition: all 0.4s ease;
-  overflow: hidden;
-  max-height: 40px;
+.header-wrapper {
+  font-family: 'Poppins', sans-serif;
 }
-.app-header.scrolled .top-bar {
-  max-height: 0;
-  padding: 0;
-  opacity: 0;
-}
-.top-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 8px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.top-contact {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.top-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--g200);
-  font-weight: 400;
-}
-.top-item i {
-  color: var(--g400);
-  font-size: 0.68rem;
-}
-.top-divider {
-  width: 1px;
-  height: 14px;
-  background: rgba(255,255,255,0.1);
-  margin: 0 16px;
-}
-.top-right {}
-.top-web {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--g300);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-.top-web i { font-size: 0.68rem; }
-.top-web:hover { color: var(--gold-light); }
 
-/* ========== MAIN NAVBAR ========== */
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid transparent;
-  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-  padding: 0;
-}
-.app-header.scrolled .navbar {
-  background: rgba(255,255,255,0.98);
-  border-bottom-color: var(--gray-100);
-  box-shadow: 0 2px 20px rgba(10,46,26,0.06);
-}
-.nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 24px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 999;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  padding: 0 48px;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+.navbar.scrolled {
+  background: rgba(6, 14, 39, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255,255,255,0.06);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
 }
 
-/* ========== BRAND ========== */
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  flex-shrink: 0;
+.navbar-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.logo-wrapper {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(245,195,50,0.5);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
-.brand-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 12px rgba(212,168,67,0.3);
-  transition: transform 0.3s ease;
+.logo-wrapper:hover {
+  border-color: rgba(245,195,50,0.9);
+  box-shadow: 0 0 20px rgba(245,195,50,0.2);
 }
-.nav-brand:hover .brand-icon { transform: scale(1.05); }
-.brand-icon span {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--g900);
-}
-.brand-text {
-  display: flex;
-  flex-direction: column;
-}
-.brand-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--g900);
-  line-height: 1.15;
-  letter-spacing: 0.5px;
-}
-.brand-sub {
-  font-size: 0.62rem;
-  color: var(--gray-500);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-weight: 500;
-}
+.logo-img { width: 34px; height: 34px; object-fit: contain; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1.5px; }
+.brand-city { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.55); }
 
-/* ========== NAV LINKS ========== */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.nav-menu::-webkit-scrollbar { display: none; }
-
+.nav-links { display: flex; align-items: center; list-style: none; gap: 2px; }
+.nav-links > li { position: relative; }
 .nav-link {
-  position: relative;
-  color: var(--gray-600);
+  display: inline-flex; align-items: center; gap: 4px;
+  color: rgba(255,255,255,0.72);
   text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 8px 13px;
+  font-size: 13px; font-weight: 500;
+  padding: 8px 15px;
   border-radius: 8px;
+  transition: all 0.25s;
   white-space: nowrap;
-  transition: all 0.25s ease;
+  position: relative;
 }
-.nav-link:hover {
-  color: var(--g700);
-  background: var(--g50);
-}
-.nav-link.router-link-exact-active {
-  color: var(--g700);
-  font-weight: 600;
-  background: var(--g50);
-}
-.nav-link.router-link-exact-active::after {
+.nav-link::after {
   content: '';
   position: absolute;
-  bottom: 1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18px;
-  height: 2.5px;
-  background: var(--gold);
-  border-radius: 99px;
+  bottom: 2px; left: 50%; transform: translateX(-50%) scaleX(0);
+  width: 18px; height: 2px;
+  background: #f5c832;
+  border-radius: 2px;
+  transition: transform 0.25s;
 }
+.nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-link:hover::after, .nav-link.active::after { transform: translateX(-50%) scaleX(1); }
+.chevron {
+  width: 13px; height: 13px; opacity: 0.5;
+  transition: transform 0.25s, opacity 0.25s;
+}
+.chevron.rotated { transform: rotate(180deg); opacity: 1; }
 
-/* ========== NAV ACTIONS ========== */
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px); left: 0;
+  min-width: 280px;
+  background: rgba(10, 20, 55, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  max-height: 70vh;
+  overflow-y: auto;
 }
-.nav-search-btn {
-  width: 38px;
-  height: 38px;
+.dropdown-panel::-webkit-scrollbar { width: 4px; }
+.dropdown-panel::-webkit-scrollbar-track { background: transparent; }
+.dropdown-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+.dropdown-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  text-align: left;
+  line-height: 1.5;
+}
+.dropdown-dot {
+  width: 5px; height: 5px; min-width: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.2s;
+  margin-top: 7px;
+}
+.dropdown-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.dropdown-item:hover .dropdown-dot { background: #f5c832; }
+
+.dropdown-enter-active { transition: all 0.25s ease-out; }
+.dropdown-leave-active { transition: all 0.15s ease-in; }
+.dropdown-enter-from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+.dropdown-leave-to { opacity: 0; transform: translateY(-4px) scale(0.98); }
+
+.navbar-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.lang-switch { display: flex; align-items: center; gap: 5px; }
+.lang { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); cursor: pointer; transition: color 0.2s; }
+.lang-active { color: #fff; font-weight: 700; }
+.lang-divider { color: rgba(255,255,255,0.25); font-size: 13px; }
+
+.btn-akses {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 22px;
+  border: 1.5px solid rgba(255,255,255,0.3);
   border-radius: 10px;
-  border: 1.5px solid var(--gray-200);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none;
   background: transparent;
-  color: var(--gray-500);
+  transition: all 0.3s;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.82rem;
-  transition: all 0.25s ease;
 }
-.nav-search-btn:hover {
-  background: var(--g50);
-  color: var(--g700);
-  border-color: var(--g200);
+.btn-akses:hover {
+  background: rgba(245,195,50,0.12);
+  border-color: rgba(245,195,50,0.6);
+  color: #f5c832;
 }
-.nav-mobile-btn {
+.btn-arrow { width: 15px; height: 15px; transition: transform 0.25s; }
+.btn-akses:hover .btn-arrow { transform: translateX(3px); }
+
+.hamburger {
   display: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1.5px solid var(--gray-200);
-  background: transparent;
-  color: var(--gray-600);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  transition: all 0.25s ease;
+  flex-direction: column; justify-content: center;
+  gap: 5px; width: 36px; height: 36px;
+  background: transparent; border: none; cursor: pointer; padding: 4px;
 }
-.nav-mobile-btn:hover {
-  background: var(--g50);
-  color: var(--g700);
-  border-color: var(--g200);
+.hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: #fff; border-radius: 2px;
+  transition: all 0.3s;
 }
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-/* ========== SEARCH MODAL ========== */
-.search-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(10,46,26,0.75);
-  backdrop-filter: blur(16px);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 14vh;
+.mobile-menu {
+  position: fixed; top: 72px; left: 0; right: 0; z-index: 998;
+  background: rgba(6, 14, 39, 0.98);
+  backdrop-filter: blur(20px);
+  display: flex; flex-direction: column;
+  padding: 16px 24px 24px; gap: 2px;
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
 }
-.search-box {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 20px;
-  background: #fff;
-  border-radius: 18px;
-  padding: 6px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+.mobile-menu::-webkit-scrollbar { width: 4px; }
+.mobile-menu::-webkit-scrollbar-track { background: transparent; }
+.mobile-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+.mobile-menu > a {
+  color: rgba(255,255,255,0.75); text-decoration: none;
+  font-size: 14px; font-weight: 600;
+  padding: 12px 14px; border-radius: 10px;
+  transition: all 0.2s;
 }
-.search-input-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
+.mobile-menu > a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.mobile-subs {
+  display: flex; flex-direction: column; gap: 2px;
+  padding-left: 16px; margin-bottom: 8px;
 }
-.search-input-row i {
-  color: var(--gray-400);
-  font-size: 1.1rem;
-  flex-shrink: 0;
+.mobile-sub-item {
+  color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 13px; font-weight: 400;
+  padding: 8px 12px; border-radius: 8px;
+  transition: all 0.2s;
 }
-.search-input-row input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 1.05rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--gray-800);
-  background: transparent;
+.mobile-sub-item:hover { background: rgba(255,255,255,0.05); color: #f5c832; }
+.mobile-menu-bottom {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 12px; padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
-.search-input-row input::placeholder { color: var(--gray-400); }
-.search-kbd {
-  padding: 3px 10px;
-  background: var(--gray-100);
-  border-radius: 6px;
-  font-size: 0.68rem;
-  color: var(--gray-500);
-  font-weight: 600;
-  border: 1px solid var(--gray-200);
-  flex-shrink: 0;
-}
-.search-hint {
-  padding: 10px 20px 14px;
-  font-size: 0.76rem;
-  color: var(--gray-400);
-  border-top: 1px solid var(--gray-100);
-}
-.modal-fade-enter-active { animation: modalIn 0.25s ease; }
-.modal-fade-leave-active { animation: modalIn 0.2s ease reverse; }
-@keyframes modalIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+.mobile-btn { border-color: rgba(245,195,50,0.5); color: #f5c832; }
+.mobileMenu-enter-active { transition: all 0.3s ease-out; }
+.mobileMenu-leave-active { transition: all 0.2s ease-in; }
+.mobileMenu-enter-from { opacity: 0; transform: translateY(-16px); }
+.mobileMenu-leave-to { opacity: 0; transform: translateY(-8px); }
 
-/* ========== MOBILE ========== */
-.drawer-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 998;
-  background: rgba(10,46,26,0.5);
-  backdrop-filter: blur(6px);
+@media (max-width: 768px) {
+  .nav-links, .navbar-right { display: none; }
+  .hamburger { display: flex; }
 }
-.drawer-fade-enter-active { animation: modalIn 0.25s ease; }
-.drawer-fade-leave-active { animation: modalIn 0.2s ease reverse; }
-
 @media (max-width: 1024px) {
-  .top-web { display: none; }
-  .nav-link { font-size: 0.76rem; padding: 8px 10px; }
-}
-
-@media (max-width: 860px) {
-  .nav-mobile-btn { display: flex; }
-  .nav-menu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 280px;
-    z-index: 999;
-    background: #fff;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 70px 12px 24px;
-    overflow-y: auto;
-    box-shadow: -8px 0 40px rgba(0,0,0,0.12);
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-  }
-  .nav-menu.open {
-    transform: translateX(0);
-  }
-  .nav-link {
-    font-size: 0.92rem;
-    padding: 14px 16px;
-    border-radius: 10px;
-    border-bottom: 1px solid var(--gray-50);
-  }
-  .nav-link.router-link-exact-active::after {
-    bottom: auto;
-    top: 50%;
-    left: 8px;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .top-divider { margin: 0 10px; }
-  .top-item { font-size: 0.68rem; }
-  .brand-title { font-size: 1rem; }
-  .brand-icon { width: 36px; height: 36px; border-radius: 9px; }
-  .brand-icon span { font-size: 1.1rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
+  .navbar { padding: 0 24px; }
 }
 </style>
