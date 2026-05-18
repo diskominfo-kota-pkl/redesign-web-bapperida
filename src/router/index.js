@@ -8,6 +8,7 @@ import JurnalPage from '../views/JurnalPage.vue'
 import PenelitianPage from '../views/PenelitianPage.vue'
 import GaleriPage from '../views/GaleriPage.vue'
 import ProfilKepalaPage from '../views/ProfilKepalaPage.vue'
+import ProgramUnggulanPage from '../views/ProgramUnggulanPage.vue'
 
 const routes = [
     { path: '/', name: 'Home', component: HomePage },
@@ -18,7 +19,8 @@ const routes = [
     { path: '/jurnal', name: 'Jurnal', component: JurnalPage },
     { path: '/penelitian', name: 'Penelitian', component: PenelitianPage },
     { path: '/galeri', name: 'Galeri', component: GaleriPage },
-    { path: '/profil-kepala', name: 'ProfilKepala', component: ProfilKepalaPage }
+    { path: '/profil-kepala', name: 'ProfilKepala', component: ProfilKepalaPage },
+    { path: '/profil/10-program-unggulan', name: 'ProgramUnggulan', component: ProgramUnggulanPage }
 ]
 
 const router = createRouter({

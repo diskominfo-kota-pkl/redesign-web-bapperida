@@ -1,15 +1,13 @@
 <template>
-  <div id="app">
-    <Header />
-    <main>
-      <router-view />
-    </main>
-    <Footer />
-  </div>
+  <!-- 2. Panggil komponen Header di atas router-view -->
+  <HeaderComponent />
+  
+  <router-view />
 </template>
 
 <script setup>
-
+// 1. Impor file Header.vue dari folder components
+// import HeaderComponent from './components/Header.vue'
 </script>
 
 <style>
@@ -19,12 +17,13 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
+html, body {
+  width: 100%;
+  background-color: #060e27;
+  overflow-x: hidden;
 }
 
-main {
-  min-height: calc(100vh - 200px);
+#app {
+  width: 100%;
 }
 </style>

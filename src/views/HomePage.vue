@@ -1,82 +1,103 @@
 <template>
   <div class="homepage" ref="homepageRef">
 
-    <!-- ══════════════ NAVBAR ══════════════ -->
-    <nav class="navbar" :class="{ scrolled: isScrolled }">
-      <div class="navbar-brand">
-        <div class="logo-wrapper">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Lambang_Kota_Samarinda.png/240px-Lambang_Kota_Samarinda.png"
-            alt="Logo BAPPERIDA Samarinda"
-            class="logo-img"
-          />
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">BAPPERIDA</span>
-          <span class="brand-city">Kota Samarinda</span>
-        </div>
+<!-- ══════════════ NAVBAR ══════════════ -->
+<!-- ══════════════ NAVBAR ══════════════ -->
+  <nav class="navbar" :class="{ scrolled: isScrolled }">
+    <div class="navbar-brand">
+      <div class="logo-wrapper">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Lambang_Kota_Samarinda.png/240px-Lambang_Kota_Samarinda.png"
+          alt="Logo BAPPERIDA Samarinda"
+          class="logo-img"
+        />
       </div>
+      <div class="brand-text">
+        <span class="brand-name">BAPPERIDA</span>
+        <span class="brand-city">Kota Samarinda</span>
+      </div>
+    </div>
 
-      <ul class="nav-links">
-        <li v-for="(link, i) in navLinks" :key="i" :class="{ 'has-dropdown': link.dropdown }">
-          <a
-            href="#"
-            class="nav-link"
-            :class="{ active: activeNav === i }"
-            @mouseenter="activeNav = i"
-            @mouseleave="activeNav = -1"
-          >
-            {{ link.label }}
-            <svg v-if="link.dropdown" class="chevron" :class="{ rotated: activeNav === i }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </a>
-          <Transition name="dropdown">
-            <div v-if="link.dropdown && activeNav === i" class="dropdown-panel">
-              <a v-for="(sub, j) in link.subs" :key="j" href="#" class="dropdown-item">
-                <span class="dropdown-dot"></span>
-                {{ sub }}
-              </a>
-            </div>
-          </Transition>
-        </li>
-      </ul>
+    <ul class="nav-links">
+      <li
+        v-for="(link, i) in navLinks"
+        :key="i"
+        :class="{ 'has-dropdown': link.dropdown }"
+        @mouseenter="link.dropdown && (activeNav = i)"
+        @mouseleave="link.dropdown && (activeNav = -1)"
+      >
+        <!-- ✅ GANTI: <a> → <router-link> -->
+        <router-link
+          :to="link.to"
+          class="nav-link"
+          :class="{ active: activeNav === i }"
+          @click="mobileOpen = false"
+        >
+          {{ link.label }}
+          <svg v-if="link.dropdown" class="chevron" :class="{ rotated: activeNav === i }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </router-link>
 
-      <div class="navbar-right">
-        <div class="lang-switch">
+        <Transition name="dropdown">
+          <div v-if="link.dropdown && activeNav === i" class="dropdown-panel">
+            <!-- ✅ GANTI: <a> → <router-link> -->
+            <router-link
+              v-for="(sub, j) in link.subs"
+              :key="j"
+              :to="sub.to"
+              class="dropdown-item"
+              @click="activeNav = -1"
+            >
+              <span class="dropdown-dot"></span>
+              {{ sub.label }}
+            </router-link>
+          </div>
+        </Transition>
+      </li>
+    </ul>
+
+    <div class="navbar-right">
+      <div class="lang-switch">
+        <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
+        <span class="lang-divider">/</span>
+        <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
+      </div>
+      <router-link to="/" class="btn-akses">
+        <span>Akses Layanan</span>
+        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </router-link>
+    </div>
+
+    <button class="hamburger" :class="{ open: mobileOpen }" @click="mobileOpen = !mobileOpen">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <Transition name="mobileMenu">
+    <div class="mobile-menu" v-if="mobileOpen">
+      <!-- ✅ GANTI: <a> → <router-link> -->
+      <router-link
+        v-for="(link, i) in navLinks"
+        :key="i"
+        :to="link.to"
+        @click="mobileOpen = false"
+      >
+        {{ link.label }}
+      </router-link>
+      <div class="mobile-menu-bottom">
+        <div class="lang-switch mobile-lang">
           <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
           <span class="lang-divider">/</span>
           <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
         </div>
-        <a href="#" class="btn-akses">
-          <span>Akses Layanan</span>
-          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
+        <router-link to="/" class="btn-akses mobile-btn">Akses Layanan</router-link>
       </div>
-
-      <button class="hamburger" :class="{ open: mobileOpen }" @click="mobileOpen = !mobileOpen">
-        <span></span><span></span><span></span>
-      </button>
-    </nav>
-
-    <!-- Mobile menu -->
-    <Transition name="mobileMenu">
-      <div class="mobile-menu" v-if="mobileOpen">
-        <a v-for="(link, i) in navLinks" :key="i" href="#" @click="mobileOpen = false">
-          {{ link.label }}
-        </a>
-        <div class="mobile-menu-bottom">
-          <div class="lang-switch mobile-lang">
-            <span class="lang" :class="{ 'lang-active': lang === 'id' }" @click="lang = 'id'">ID</span>
-            <span class="lang-divider">/</span>
-            <span class="lang" :class="{ 'lang-active': lang === 'en' }" @click="lang = 'en'">EN</span>
-          </div>
-          <a href="#" class="btn-akses mobile-btn">Akses Layanan</a>
-        </div>
-      </div>
-    </Transition>
+    </div>
+  </Transition>
 
     <!-- ══════════════ HERO ══════════════ -->
     <section class="hero" @mousemove="onHeroMouseMove" @mouseleave="heroParallax = { x: 0, y: 0 }">
@@ -331,13 +352,74 @@ const ctaSection = ref(null)
 
 const heroLines = ['Membangun Samarinda', 'Menuju Kota Pusat', 'Peradaban']
 
+/* ════════════════════════════════════════════
+   NAVLINKS — diubah sesuai screenshot website asli
+   ════════════════════════════════════════════ */
 const navLinks = [
-  { label: 'Beranda' },
-  { label: 'Profil' },
-  { label: 'Bidang', dropdown: true, subs: ['Perencanaan', 'Riset & Pengembangan', 'Pengendalian Pembangunan', 'Statistik & Informasi'] },
-  { label: 'Data & Statistik' },
-  { label: 'Publikasi' },
-  { label: 'Layanan' },
+  {
+    label: 'Beranda',
+    to: '/'
+  },
+  {
+    label: 'Profil',
+    to: '/profil/10-program-unggulan', // fallback, bisa ke program unggulan dulu
+    dropdown: true,
+    subs: [
+      { label: '10 Program Unggulan Walikota Samarinda', to: '/profil/10-program-unggulan' },
+      { label: 'Dasar Hukum', to: '/profil/dasar-hukum' },
+      { label: 'Visi & Misi', to: '/profil/visi-misi' },
+      { label: 'Struktur Organisasi', to: '/profil/struktur-organisasi' },
+      { label: 'Tupoksi', to: '/profil/tupoksi' },
+      { label: 'Profil Kepala Badan', to: '/profil-kepala' },
+      { label: 'Profil Sekretaris', to: '/profil/sekretaris' }
+    ]
+  },
+  {
+    label: 'Bidang',
+    to: '/bidang/perencanaan',
+    dropdown: true,
+    subs: [
+      { label: 'Kepala Badan', to: '/profil-kepala' },
+      { label: 'Sekretariat', to: '/bidang/sekretariat' },
+      { label: 'Bidang Perencanaan', to: '/bidang/perencanaan' },
+      { label: 'Bidang Riset & Pengembangan', to: '/bidang/riset' },
+      { label: 'Bidang Pengendalian Pembangunan', to: '/bidang/pengendalian' },
+      { label: 'Bidang Statistik & Informasi', to: '/bidang/statistik' }
+    ]
+  },
+  {
+    label: 'Berita & Informasi',
+    to: '/artikel',
+    dropdown: true,
+    subs: [
+      { label: 'Agenda', to: '/artikel' },
+      { label: 'Pengumuman', to: '/artikel' },
+      { label: 'Berita', to: '/berita-daerah' },
+      { label: 'Artikel', to: '/artikel' },
+      { label: 'Galeri', to: '/galeri' },
+      { label: 'Video', to: '/artikel' },
+      { label: 'Download', to: '/artikel' }
+    ]
+  },
+  {
+    label: 'PPID Pelaksana',
+    to: '/ppid',
+    dropdown: true,
+    subs: [
+      { label: 'Profil PPID', to: '/ppid' },
+      { label: 'Mekanisme Permohonan Informasi', to: '/ppid' },
+      { label: 'Pengadaan Barang dan Jasa', to: '/ppid' },
+      { label: 'Peraturan, Keputusan & Kebijakan', to: '/ppid' },
+      { label: 'Dokumen SAKIP', to: '/ppid' },
+      { label: 'Laporan Kinerja', to: '/ppid' },
+      { label: 'Laporan Keuangan', to: '/ppid' },
+      { label: 'Rencana Kerja', to: '/ppid' }
+    ]
+  },
+  {
+    label: 'DARURAT',
+    to: '/'
+  }
 ]
 
 const features = [
@@ -405,8 +487,8 @@ const socials = [
 ]
 
 const footerGroups = [
-  { title: 'Navigasi', links: ['Beranda', 'Profil', 'Bidang', 'Data & Statistik', 'Publikasi', 'Layanan'] },
-  { title: 'Layanan', links: ['Perizinan Online', 'Pengaduan Masyarakat', 'Permohonan Data', 'FAQ', 'Kontak'] },
+  { title: 'Navigasi', links: ['Beranda', 'Profil', 'Bidang', 'Berita & Informasi', 'PPID Pelaksana'] },
+  { title: 'Layanan', links: ['Permohonan Informasi', 'Pengadaan Barang/Jasa', 'Download Dokumen', 'FAQ', 'Kontak'] },
   { title: 'Terkait', links: ['Pemkot Samarinda', 'DPRD Samarinda', 'BPS Kaltim', 'Kemenkeu RI', 'Kemendagri'] },
 ]
 
@@ -648,7 +730,7 @@ html, body {
 .dropdown-panel {
   position: absolute;
   top: calc(100% + 8px); left: 0;
-  min-width: 240px;
+  min-width: 260px;
   background: rgba(10, 20, 55, 0.96);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.1);
@@ -657,15 +739,29 @@ html, body {
   box-shadow: 0 16px 48px rgba(0,0,0,0.4);
 }
 .dropdown-item {
-  display: flex; align-items: center; gap: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   color: rgba(255,255,255,0.75);
   text-decoration: none;
-  font-size: 13px; font-weight: 500;
+  font-size: 13px;
+  font-weight: 500;
   padding: 10px 14px;
   border-radius: 8px;
   transition: all 0.2s;
+  text-align: left;
+  line-height: 1.5;
 }
-.dropdown-item:hover { background: rgba(245,195,50,0.1); color: #f5c832; }
+.dropdown-dot {
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.2s;
+  margin-top: 7px;
+}
+.dropdown-item:hover .dropdown-dot { background: #f5c832; }
 .dropdown-dot {
   width: 5px; height: 5px;
   border-radius: 50%;
