@@ -1,15 +1,15 @@
 <template>
-  <!-- 2. Panggil komponen Header di atas router-view -->
-  <HeaderComponent />
+  <Header />
   
   <router-view />
+  
+  <Footer />
 </template>
 
 <script setup>
-// 1. Impor file Header.vue dari folder components
-// import HeaderComponent from './components/Header.vue'
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 </script>
-
 <style>
 * {
   margin: 0;
