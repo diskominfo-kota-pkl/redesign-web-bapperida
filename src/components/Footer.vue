@@ -1,100 +1,92 @@
 <!-- TheFooter.vue -->
 <template>
-  <footer class="main-footer">
-    <div class="footer-top">
-      <div class="container">
-        <div class="footer-grid">
-          <!-- Logo & About -->
-          <div class="footer-column about">
-            <div class="footer-logo">
-              <img src="https://bapperida.samarindakota.go.id/storage/Template/logo3.png" alt="Logo Bapperida">
-              <div class="logo-text">
-                <span class="pemerintah">PEMERINTAH KOTA SAMARINDA</span>
-                <h3>Badan Perencanaan Pembangunan,<br>Riset dan Inovasi Daerah</h3>
-              </div>
-            </div>
-            <p class="footer-desc">
-              Website resmi Bapperida Kota Samarinda sebagai sumber informasi publik terkait perencanaan pembangunan, riset dan inovasi daerah.
-            </p>
-            <div class="social-media">
-              <a href="https://facebook.com/bappedalitbang.smd" target="_blank" class="social-link" title="Facebook">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-              <a href="https://twitter.com/@bapp_smr" target="_blank" class="social-link" title="Twitter">
-                <i class="fab fa-twitter"></i>
-              </a>
-              <a href="https://instagram.com/bapperida.kotasmr/" target="_blank" class="social-link" title="Instagram">
-                <i class="fab fa-instagram"></i>
-              </a>
-              <a href="https://www.youtube.com/@bapperida.samarinda" target="_blank" class="social-link" title="YouTube">
-                <i class="fab fa-youtube"></i>
-              </a>
+  <footer class="app-footer">
+    <!-- Wave Separator -->
+    <div class="footer-wave">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+        <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z" fill="#0F1A14"/>
+      </svg>
+    </div>
+
+    <div class="footer-main">
+      <div class="footer-inner">
+        <!-- Kolom 1: Brand -->
+        <div class="footer-col footer-col--brand">
+          <div class="footer-brand">
+            <div class="footer-brand-icon"><span>B</span></div>
+            <div>
+              <div class="footer-brand-title">BAPPERIDA</div>
+              <div class="footer-brand-sub">Kota Samarinda</div>
             </div>
           </div>
-
-          <!-- Quick Links -->
-          <div class="footer-column">
-            <h4>Link Cepat</h4>
-            <ul class="footer-links">
-              <li><router-link to="/profil-pimpinan">Profil Pimpinan</router-link></li>
-              <li><router-link to="/struktur-organisasi">Struktur Organisasi</router-link></li>
-              <li><router-link to="/laman/visi-dan-misi">Visi dan Misi</router-link></li>
-              <li><router-link to="/laman/tugas-pokok-dan-fungsi">Tugas Pokok dan Fungsi</router-link></li>
-              <li><router-link to="/pengadaan">Pengadaan Barang & Jasa</router-link></li>
-            </ul>
+          <p class="footer-desc">
+            Badan Perencanaan Pembangunan, Riset dan Inovasi Daerah Kota Samarinda — merencanakan pembangunan yang berkelanjutan untuk masyarakat tepian.
+          </p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="footer-social" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="footer-social" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
           </div>
+        </div>
 
-          <!-- Services -->
-          <div class="footer-column">
-            <h4>Layanan</h4>
-            <ul class="footer-links">
-              <li><router-link to="/artikel">Artikel</router-link></li>
-              <li><router-link to="/berita-daerah">Berita Daerah</router-link></li>
-              <li><router-link to="/jurnal">Jurnal Riset</router-link></li>
-              <li><router-link to="/litbang">Penelitian & Pengembangan</router-link></li>
-              <li><router-link to="/galeri">Galeri Foto & Video</router-link></li>
-            </ul>
-          </div>
+        <!-- Kolom 2: Navigasi -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Navigasi</h4>
+          <ul class="footer-links">
+            <li v-for="link in navLinks" :key="link.to">
+              <router-link :to="link.to">{{ link.label }}</router-link>
+            </li>
+          </ul>
+        </div>
 
-          <!-- Contact -->
-          <div class="footer-column contact">
-            <h4>Kontak Kami</h4>
-            <div class="contact-item">
+        <!-- Kolom 3: Kontak -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Kontak Kami</h4>
+          <ul class="footer-contact">
+            <li>
               <i class="fas fa-map-marker-alt"></i>
-              <span>Jl. Dahlia No.81, Kel. Bugis,<br>Kec. Samarinda Kota,<br>Kota Samarinda, Kalimantan Timur 75121</span>
-            </div>
-            <div class="contact-item">
-              <i class="fas fa-phone"></i>
+              <span>Jl. Dahlia No.81, Kel. Bugis, Kec. Samarinda Kota</span>
+            </li>
+            <li>
+              <i class="fas fa-phone-alt"></i>
               <span>0541-203785</span>
-            </div>
-            <div class="contact-item">
+            </li>
+            <li>
               <i class="fas fa-envelope"></i>
               <span>bappedalitbang@samarindakota.go.id</span>
-            </div>
-            <div class="contact-item">
+            </li>
+            <li>
               <i class="fas fa-globe"></i>
-              <span>bapperida.samarindakota.go.id</span>
-            </div>
-            <a href="tel:112" class="emergency-btn">
-              <i class="fas fa-exclamation-triangle"></i> DARURAT: 112
-            </a>
-          </div>
+              <a href="https://bapperida.samarindakota.go.id" target="_blank" rel="noopener">
+                bapperida.samarindakota.go.id
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Kolom 4: Terkait -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Tautan Terkait</h4>
+          <ul class="footer-links">
+            <li><a href="https://samarindakota.go.id" target="_blank" rel="noopener">Pemkot Samarinda</a></li>
+            <li><a href="https://kaltimprov.go.id" target="_blank" rel="noopener">Pemprov Kaltim</a></li>
+            <li><a href="https://ikn.go.id" target="_blank" rel="noopener">IKN Nusantara</a></li>
+            <li><a href="https://bungkarangka.bps.go.id" target="_blank" rel="noopener">BPS Samarinda</a></li>
+            <li><a href="https://kemendagri.go.id" target="_blank" rel="noopener">Kemendagri RI</a></li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <!-- Footer Bottom -->
+    <!-- Bottom Bar -->
     <div class="footer-bottom">
-      <div class="container">
-        <div class="bottom-content">
-          <p class="copyright">
-            &copy; 2026 <strong>Bapperida Kota Samarinda</strong>. All Rights Reserved.
-          </p>
-          <div class="footer-badges">
-            <span class="badge">Dispertahub Samarinda</span>
-            <span class="badge">Pemerintah Kota Samarinda</span>
-            <span class="badge">Kota Samarinda</span>
-          </div>
+      <div class="footer-bottom-inner">
+        <span>&copy; 2025 BAPPERIDA Kota Samarinda. Hak Cipta Dilindungi.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Kebijakan Privasi</a>
+          <a href="#">Syarat & Ketentuan</a>
+          <a href="#">Peta Situs</a>
         </div>
       </div>
     </div>
@@ -116,205 +108,249 @@ const navLinks = [
 </script>
 
 <style scoped>
-.main-footer {
-  background: linear-gradient(180deg, #002244 0%, #003366 100%);
-  color: white;
+/* ========== VARIABEL ========== */
+:root {
+  --g900: #0A2E1A; --g800: #143D26; --g700: #1B5E30;
+  --g600: #237A3E; --g500: #2E964F; --g400: #4CB872;
+  --g300: #7DD4A0; --g200: #B5E6C8; --g100: #E0F3E8; --g50: #F0FAF3;
+  --gold: #D4A843; --gold-light: #E2C36B;
+  --dark: #0F1A14;
+  --gray-600: #556159; --gray-500: #6B7A72;
+  --gray-400: #8A9992; --gray-300: #B0BDB7;
 }
 
-.footer-top {
-  padding: 60px 0 40px;
+/* ========== WAVE ========== */
+.footer-wave {
+  line-height: 0;
+  margin-bottom: -2px;
+}
+.footer-wave svg {
+  width: 100%;
+  height: 60px;
+  display: block;
 }
 
-.footer-grid {
+/* ========== FOOTER MAIN ========== */
+.footer-main {
+  background: var(--dark);
+  padding: 48px 0 36px;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr 0.9fr 1fr 0.9fr;
   gap: 40px;
 }
 
-.footer-column h4 {
-  font-size: 16px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #ff9900;
-  display: inline-block;
-}
-
-/* About Column */
-.footer-logo {
+/* ========== BRAND COL ========== */
+.footer-brand {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 18px;
 }
-
-.footer-logo img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-}
-
-.logo-text .pemerintah {
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: #ff9900;
-}
-
-.logo-text h3 {
-  font-size: 16px;
-  line-height: 1.3;
-  margin-top: 5px;
-}
-
-.footer-desc {
-  font-size: 13px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 20px;
-}
-
-/* Social Media */
-.social-media {
-  display: flex;
-  gap: 10px;
-}
-
-.social-link {
+.footer-brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 50%;
-  color: white;
+  box-shadow: 0 2px 10px rgba(212,168,67,0.25);
+  flex-shrink: 0;
+}
+.footer-brand-icon span {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--g900);
+}
+.footer-brand-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+.footer-brand-sub {
+  font-size: 0.6rem;
+  color: var(--gray-400);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.footer-desc {
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.footer-socials {
+  display: flex;
+  gap: 8px;
+}
+.footer-social {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-400);
+  font-size: 0.82rem;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+}
+.footer-social:hover {
+  background: var(--g700);
+  color: #fff;
+  border-color: var(--g700);
+  transform: translateY(-2px);
 }
 
-.social-link:hover {
-  background: #ff9900;
-  transform: translateY(-3px);
+/* ========== HEADING ========== */
+.footer-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 12px;
+}
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 99px;
 }
 
-/* Footer Links */
+/* ========== LINKS ========== */
 .footer-links {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-
-.footer-links li {
-  margin-bottom: 12px;
-}
-
 .footer-links a {
-  color: rgba(255,255,255,0.8);
+  color: var(--gray-400);
   text-decoration: none;
-  font-size: 13px;
-  transition: all 0.3s;
+  font-size: 0.8rem;
+  transition: all 0.25s ease;
   display: flex;
-  align-items: center;
-}
-
-.footer-links a::before {
-  content: '›';
-  margin-right: 8px;
-  color: #ff9900;
-  font-size: 16px;
-}
-
-.footer-links a:hover {
-  color: #ff9900;
-  padding-left: 5px;
-}
-
-/* Contact */
-.contact-item {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 15px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
-}
-
-.contact-item i {
-  color: #ff9900;
-  margin-top: 3px;
-}
-
-.emergency-btn {
-  display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #e74c3c;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
+}
+.footer-links a::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gray-600);
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.footer-links a:hover {
+  color: var(--g300);
+  transform: translateX(4px);
+}
+.footer-links a:hover::before {
+  background: var(--g400);
+}
+
+/* ========== KONTAK ========== */
+.footer-contact {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.footer-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  line-height: 1.5;
+}
+.footer-contact li i {
+  color: var(--g400);
+  font-size: 0.75rem;
+  margin-top: 4px;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+.footer-contact a {
+  color: var(--gray-300);
   text-decoration: none;
-  font-weight: 600;
-  margin-top: 10px;
-  transition: all 0.3s;
+  transition: color 0.25s ease;
 }
+.footer-contact a:hover { color: var(--gold-light); }
 
-.emergency-btn:hover {
-  background: #c0392b;
-}
-
-/* Footer Bottom */
+/* ========== BOTTOM BAR ========== */
 .footer-bottom {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(255,255,255,0.05);
   padding: 20px 0;
 }
-
-.bottom-content {
+.footer-bottom-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.72rem;
+  color: var(--gray-500);
 }
-
-.copyright {
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
-}
-
-.copyright strong {
-  color: #ff9900;
-}
-
-.footer-badges {
+.footer-bottom-links {
   display: flex;
-  gap: 10px;
+  gap: 20px;
 }
-
-.footer-badges .badge {
-  background: rgba(255,255,255,0.1);
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-size: 11px;
-  color: rgba(255,255,255,0.8);
+.footer-bottom-links a {
+  color: var(--gray-500);
+  text-decoration: none;
+  transition: color 0.25s ease;
 }
+.footer-bottom-links a:hover { color: var(--g300); }
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
-  .footer-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
   }
 }
 
-@media (max-width: 768px) {
-  .footer-grid {
+@media (max-width: 640px) {
+  .footer-inner {
     grid-template-columns: 1fr;
+    gap: 28px;
   }
-  
-  .bottom-content {
+  .footer-bottom-inner {
     flex-direction: column;
-    gap: 15px;
     text-align: center;
+    gap: 10px;
   }
-  
-  .footer-badges {
-    flex-wrap: wrap;
-    justify-content: center;
+  .footer-bottom-links { justify-content: center; }
+  .footer-wave svg { height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 </style>
