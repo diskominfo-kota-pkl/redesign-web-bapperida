@@ -68,34 +68,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Riwayat Pimpinan BAPPERIDA -->
-        <div class="riwayat-card anim-target" data-delay="3">
-          <div class="section-tag">Sejarah</div>
-          <h3 class="section-title-sm">Riwayat Pimpinan BAPPERIDA</h3>
-          <div class="pimpinan-table-wrap">
-            <table class="pimpinan-table">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Pimpinan</th>
-                  <th>Jabatan</th>
-                  <th>Mulai</th>
-                  <th>Akhir</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(p, i) in riwayatPimpinan" :key="i" :class="{ current: i === 0 }">
-                  <td>{{ riwayatPimpinan.length - i }}</td>
-                  <td class="nama">{{ p.nama }}</td>
-                  <td class="jabatan">{{ p.jabatan }}</td>
-                  <td>{{ p.mulai }}</td>
-                  <td>{{ p.akhir }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -129,24 +101,6 @@ const pendidikan = [
 const pekerjaan = [
   { periode: '2024 — Sekarang', uraian: 'Asisten Perekonomian dan Pembangunan' },
   { periode: '2026', uraian: 'Plt. Kepala Badan Perencanaan Pembangunan, Riset dan Inovasi Daerah Kota Samarinda' }
-]
-
-const riwayatPimpinan = [
-  { nama: 'Marnabas, S.Sos., M.Si', jabatan: 'Plt. Kepala BAPPERIDA', mulai: '27 Feb 2026', akhir: '26 Mei 2026' },
-  { nama: 'H. Ananta Fathurrozi, S.Sos., M.Si', jabatan: 'Kepala BAPPERIDA', mulai: '5 Mar 2024', akhir: '27 Feb 2026' },
-  { nama: 'H. Ananta Fathurrozi, S.Sos., M.Si', jabatan: 'Kepala Bapperida, Penelitian dan Pengembangan', mulai: '14 Feb 2022', akhir: '5 Mar 2024' },
-  { nama: 'H. Ananta Fathurrozi, S.Sos., M.Si', jabatan: 'Kepala Bapperida', mulai: '26 Mar 2019', akhir: '14 Feb 2022' },
-  { nama: 'Dr. H. Asli Nuryadin, S.Pd., MM.', jabatan: 'Kepala Bapperida', mulai: '30 Des 2016', akhir: '26 Mar 2019' },
-  { nama: 'Dr. H. Sugeng Chairuddin, M.Si', jabatan: 'Kepala Bapperida', mulai: '9 Okt 2014', akhir: '30 Des 2016' },
-  { nama: 'H. Ismansyah, S.E., M.Si', jabatan: 'Kepala Bapperida', mulai: '18 Jan 2012', akhir: '9 Okt 2014' },
-  { nama: 'Drs. H. Ali Fitri Noor, MM.', jabatan: 'Kepala Bapperida', mulai: '13 Jul 2010', akhir: '18 Jan 2012' },
-  { nama: 'Dr. Mugni Baharuddin, S.H., MM., MH.', jabatan: 'Kepala Bapperida', mulai: '30 Okt 2008', akhir: '13 Jul 2010' },
-  { nama: 'Drs. H. Maryadi S, M.Si', jabatan: 'Ketua Bapperida', mulai: '16 Des 2005', akhir: '30 Okt 2008' },
-  { nama: 'Ir. H. Arfan Zainal', jabatan: 'Ketua Bapperida', mulai: '12 Jan 2004', akhir: '16 Des 2005' },
-  { nama: 'Ir. H. Mochdar Hasan', jabatan: 'Ketua Bapperida Dati II', mulai: '15 Des 1998', akhir: '12 Jan 2004' },
-  { nama: 'Drs. H. Mardiansyah Marhat', jabatan: 'Ketua Bapperida Dati II', mulai: '25 Jan 1992', akhir: '15 Des 1998' },
-  { nama: 'Ir. Razak Rahim', jabatan: 'Ketua Bapperida Dati II', mulai: '3 Jan 1981', akhir: '25 Jan 1992' },
-  { nama: 'Drs. Sofyan Muhammad', jabatan: 'Ketua Persiapan Bapperida KOMAS', mulai: '5 Jan 1979', akhir: '3 Jan 1981' }
 ]
 
 function handleScroll() {
@@ -221,17 +175,6 @@ onUnmounted(() => { window.removeEventListener('scroll', handleScroll) })
 .kerja-periode{font-size:11px;font-weight:700;color:#f5c832;letter-spacing:1px;text-transform:uppercase}
 .kerja-content h4{font-size:14px;font-weight:600;color:rgba(255,255,255,.75);margin:4px 0 0}
 
-.pimpinan-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.06)}
-.pimpinan-table{width:100%;border-collapse:collapse;font-size:13px}
-.pimpinan-table thead{background:rgba(245,195,50,.08)}
-.pimpinan-table th{padding:14px 16px;text-align:left;font-size:11px;font-weight:700;color:#f5c832;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.pimpinan-table td{padding:12px 16px;color:rgba(255,255,255,.6);border-top:1px solid rgba(255,255,255,.04);white-space:nowrap}
-.pimpinan-table tr:hover td{background:rgba(255,255,255,.02)}
-.pimpinan-table .nama{color:rgba(255,255,255,.85);font-weight:600}
-.pimpinan-table .jabatan{color:rgba(255,255,255,.45);font-size:12px}
-.pimpinan-table tr.current{background:rgba(245,195,50,.06)}
-.pimpinan-table tr.current td{color:rgba(255,255,255,.8)}
-
 .bottom-cta{padding:0 48px 100px}
 .cta-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:40px 44px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
 .cta-text h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
@@ -250,8 +193,6 @@ onUnmounted(() => { window.removeEventListener('scroll', handleScroll) })
   .pk-meta{align-items:center}
   .meta-item{text-align:left;width:100%;max-width:320px}
   .riwayat-card{padding:24px 16px}
-  .pimpinan-table{font-size:11px}
-  .pimpinan-table th,.pimpinan-table td{padding:10px 12px}
   .cta-inner{flex-direction:column;text-align:center;padding:32px 24px}
   .bottom-cta{padding-bottom:80px}
 }

@@ -130,7 +130,7 @@ const navLinks = [
       { label: 'Struktur Organisasi', to: '/profil/struktur-organisasi' },
       { label: 'Tupoksi', to: '/profil/tupoksi' },
       { label: 'Profil Kepala Badan', to: '/profil/profil-kepala' },
-      { label: 'Profil Sekretaris', to: '/profil/sekretaris' },
+      { label: 'Riwayat Pimpinan', to: '/profil/riwayat-pimpinan' },
       { label: 'Maklumat Pelayanan', to: '/profil/maklumat-pelayanan' },
       { label: 'Sejarah Samarinda', to: '/profil/sejarah-samarinda' }
     ]

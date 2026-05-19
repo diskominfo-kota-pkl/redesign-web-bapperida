@@ -13,17 +13,13 @@ import DasarHukumPage from '../views/DasarHukumPage.vue'
 import VisiMisiPage from '../views/VisiMisiPage.vue'
 import StrukturOrganisasiPage from '../views/StrukturOrganisasiPage.vue'
 import TupoksiPage from '../views/TupoksiPage.vue'
-import ProfilSekretarisPage from '../views/ProfilSekretarisPage.vue'
 import MaklumatPelayananPage from '../views/MaklumatPelayananPage.vue'
 import SejarahSamarindaPage from '../views/SejarahSamarindaPage.vue'
-import AgendaPage from '../views/AgendaPage.vue'
-import PengumumanPage from '../views/PengumumanPage.vue'
+import RiwayatPimpinanPage from '../views/RiwayatPimpinanPage.vue'
 
 const routes = [
     { path: '/', name: 'Home', component: HomePage },
     { path: '/artikel', name: 'Artikel', component: ArtikelPage },
-    { path: '/Agenda', name: 'Agenda', component: AgendaPage },
-    { path: '/Pengumuman', name: 'Pengumuman', component : PengumumanPage },
     { path: '/berita-daerah', name: 'BeritaDaerah', component: BeritaDaerahPage },
     { path: '/berita-nasional', name: 'BeritaNasional', component: BeritaNasionalPage },
     { path: '/siaran-pers', name: 'SiaranPers', component: SiaranPersPage },
@@ -36,9 +32,9 @@ const routes = [
     { path: '/profil/struktur-organisasi', name: 'StrukturOrganisasi', component: StrukturOrganisasiPage },
     { path: '/profil/tupoksi', name: 'Tupoksi', component: TupoksiPage },
     { path: '/profil/profil-kepala', name: 'ProfilKepala', component: ProfilKepalaPage },
-    { path: '/profil/sekretaris', name: 'ProfilSekretaris', component: ProfilSekretarisPage },
     { path: '/profil/maklumat-pelayanan', name: 'MaklumatPelayanan', component: MaklumatPelayananPage },
     { path: '/profil/sejarah-samarinda', name: 'SejarahSamarinda', component: SejarahSamarindaPage },
+    { path: '/profil/riwayat-pimpinan', name: 'RiwayatPimpinan', component: RiwayatPimpinanPage },
     { path: '/profil-kepala', redirect: '/profil/profil-kepala' }
 ]
 
